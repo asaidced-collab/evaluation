@@ -1,105 +1,273 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>استمارة التحكيم</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>استمارة التحكيم – النسخة الكاملة</title>
   <style>
-    body { font-family: system-ui, "Segoe UI", Tahoma, Arial; line-height: 1.7; margin: 0; background:#fafafa; color:#222; }
-    .container { max-width: 900px; margin: 24px auto; background:#fff; padding: 24px; border-radius: 16px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
-    h1, h2 { margin-top: 0; }
-    .page { display: none; }
-    .page.active { display: block; }
-    .navigation-buttons { display: flex; gap: 12px; margin-top: 20px; }
-    .btn { padding: 10px 16px; border: none; border-radius: 10px; cursor: pointer; background:#1a73e8; color:#fff; font-weight:600; }
-    .btn:disabled { opacity:.5; cursor: not-allowed; }
+    body { font-family: system-ui,"Segoe UI",Tahoma,Arial; line-height:1.7; margin:0; background:#fafafa; color:#222; }
+    .container { max-width:1000px; margin:24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.06); }
+    h1,h2 { margin-top:0; }
+    .page { display:none; }
+    .page.active { display:block; }
+    .navigation-buttons { display:flex; gap:12px; margin-top:20px; }
+    .btn { padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#1a73e8; color:#fff; font-weight:600; }
     .btn-secondary { background:#737373; }
-    .progress { background:#eee; height:10px; border-radius:999px; overflow:hidden; margin: 16px 0 24px; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .progress { background:#eee; height:10px; border-radius:999px; overflow:hidden; margin:16px 0 24px; }
     .progress > span { display:block; height:100%; width:0%; background:#1a73e8; transition:width .3s; }
-    .field { margin: 12px 0; }
+    .field { margin:12px 0; }
     label { display:block; margin-bottom:6px; font-weight:600; }
-    input[type="text"], textarea, select { width: 100%; padding: 10px; border-radius: 10px; border:1px solid #ddd; }
+    input[type="text"],input[type="number"],input[type="email"],textarea,select { width:100%; padding:10px; border-radius:10px; border:1px solid #ddd; }
     .hint { color:#666; font-size:.9em; }
+    .grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
+    .grid .field:nth-child(4) { grid-column: span 3; }
+    .item-block hr { border:none; border-top:1px dashed #ddd; margin:16px 0; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .grid .field:nth-child(4) { grid-column: span 1; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>استمارة التحكيم</h1>
+    <h1>استمارة التحكيم – النسخة الكاملة</h1>
     <div class="progress"><span id="progressFill"></span></div>
 
-    <!-- الصفحة 0: الغلاف -->
-    <section class="page active" id="page0">
-      <h2>مرحبًا بك</h2>
-      <p>اضغط الزر لبدء التحكيم.</p>
+    <!-- سيتم إنشاء الصفحات البنودية برمجيًا -->
+    <div id="pages">
+      <!-- الصفحة 0: ترحيب -->
+      <section class="page active" id="page0">
+        <h2>مرحبًا بك</h2>
+        <p>هذه النسخة الكاملة من استمارة التحكيم. اضغط الزر لبدء الإدخال.</p>
+        <div class="navigation-buttons">
+          <button class="btn" type="button" onclick="nextPage()">بدء التحكيم</button>
+        </div>
+      </section>
+
+      <!-- الصفحة 1: بيانات عامة -->
+      <section class="page" id="page1">
+        <h2>بيانات المحكّم</h2>
+        <div class="grid">
+          <div class="field">
+            <label>اسم المُحكِّم</label>
+            <input type="text" name="اسم المُحكِّم" placeholder="مثال: د. أحمد" />
+          </div>
+          <div class="field">
+            <label>الصفة/الدور</label>
+            <select name="الصفة/الدور">
+              <option value="">اختر...</option>
+              <option value="عضو هيئة تدريس">عضو هيئة تدريس</option>
+              <option value="باحث">باحث</option>
+              <option value="مشرف أكاديمي">مشرف أكاديمي</option>
+              <option value="خبير ميداني">خبير ميداني</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>سنوات الخبرة</label>
+            <input type="number" name="سنوات الخبرة" min="0" max="60" placeholder="عدد السنوات" />
+          </div>
+          <div class="field">
+            <label>طبيعة الخبرة بالتربية الدامجة</label>
+            <select name="طبيعة الخبرة بالتربية الدامجة">
+              <option value="">اختر...</option>
+              <option value="تدريس">تدريس</option>
+              <option value="بحث">بحث</option>
+              <option value="إدارة/تنفيذ">إدارة/تنفيذ</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>البريد الإلكتروني (اختياري)</label>
+            <input type="email" name="البريد الإلكتروني" />
+          </div>
+        </div>
+
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
+          <button class="btn" type="button" onclick="nextPage()">التالي</button>
+        </div>
+      </section>
+      <!-- الصفحات البنودية سيتم توليدها هنا -->
+    </div>
+
+    <!-- صفحة التعليقات العامة والتقييم -->
+    <section class="page" id="page999">
+      <h2>تعليقات عامة وتقييم نهائي</h2>
+      <div class="grid">
+        <div class="field">
+          <label>تعليقات المحور 1</label>
+          <textarea name="تعليقات المحور 1" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>تعليقات المحور 3</label>
+          <textarea name="تعليقات المحور 3" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>تعليقات المحور 4</label>
+          <textarea name="تعليقات المحور 4" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>تعليقات المحور 5</label>
+          <textarea name="تعليقات المحور 5" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>تعليقات المحور 6</label>
+          <textarea name="تعليقات المحور 6" rows="3"></textarea>
+        </div>
+
+        <div class="field">
+          <label>التقييم الكلي</label>
+          <select name="التقييم الكلي">
+            <option value="">اختر...</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>شمول التغطية</label>
+          <select name="شمول التغطية">
+            <option value="">اختر...</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ملاءمة عدد البنود</label>
+          <select name="ملاءمة عدد البنود">
+            <option value="">اختر...</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>التوصية النهائية</label>
+          <select name="التوصية النهائية">
+            <option value="">اختر...</option>
+            <option value="نعم">نعم</option>
+            <option value="بعد تعديلات">بعد تعديلات</option>
+            <option value="لا">لا</option>
+          </select>
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label>عناصر القوة</label>
+          <textarea name="عناصر القوة" rows="3"></textarea>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>مجالات التحسين</label>
+          <textarea name="مجالات التحسين" rows="3"></textarea>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>ملاحظات عامة</label>
+          <textarea name="ملاحظات عامة" rows="3"></textarea>
+        </div>
+      </div>
+
       <div class="navigation-buttons">
-        <button class="btn" id="startBtn" type="button">بدء التحكيم</button>
+        <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
+        <button class="btn" type="button" onclick="nextPage()">التالي</button>
       </div>
     </section>
 
-    <!-- الصفحة 1: مثال لأسئلة (عدّلها لاحقًا كما تريد) -->
-    <section class="page" id="page1">
-      <h2>المحور الأول</h2>
-      <div class="field">
-        <label>اسم المقيّم</label>
-        <input type="text" name="اسم المقيّم" placeholder="مثال: د. أحمد"/>
-      </div>
-      <div class="field">
-        <label>مستوى الرضا</label>
-        <select name="مستوى الرضا">
-          <option value="">اختر...</option>
-          <option value="1">1 - منخفض</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5 - مرتفع</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>ملاحظات</label>
-        <textarea name="الملاحظات" rows="4" placeholder="اكتب ملاحظاتك"></textarea>
-      </div>
-
-      <div class="navigation-buttons">
-        <button class="btn-secondary btn" type="button" id="prev1">السابق</button>
-        <button class="btn" type="button" id="next1">التالي</button>
-      </div>
-    </section>
-
-    <!-- الصفحة 2: مثال محاور إضافية -->
-    <section class="page" id="page2">
-      <h2>المحور الثاني</h2>
-      <div class="field">
-        <label>عناصر القوة (اختر ما ينطبق)</label>
-        <label><input type="checkbox" name="عناصر القوة" value="تنظيم جيد"> تنظيم جيد</label>
-        <label><input type="checkbox" name="عناصر القوة" value="وضوح في الأهداف"> وضوح في الأهداف</label>
-        <label><input type="checkbox" name="عناصر القوة" value="تفاعل المشاركين"> تفاعل المشاركين</label>
-      </div>
-
-      <div class="navigation-buttons">
-        <button class="btn-secondary btn" type="button" id="prev2">السابق</button>
-        <button class="btn" type="button" id="next2">التالي</button>
-      </div>
-    </section>
-
-    <!-- الصفحة الأخيرة: الإرسال -->
-    <section class="page" id="page3">
+    <!-- صفحة الإرسال -->
+    <section class="page" id="page1000">
       <h2>إرسال التحكيم</h2>
-      <p class="hint">عند الضغط على "إرسال التحكيم" سيتم إرسال البيانات إلى Google Sheet.</p>
+      <p class="hint">عند الضغط على "إرسال التحكيم" سيتم إرسال جميع البيانات إلى Google Sheet.</p>
       <div class="navigation-buttons">
-        <button class="btn-secondary btn" type="button" id="prev3">السابق</button>
-        <button class="btn" type="button" id="submitBtn">إرسال التحكيم</button>
+        <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
+        <button class="btn" type="button" onclick="submitForm()">إرسال التحكيم</button>
       </div>
     </section>
 
   </div>
 
   <script>
-    // ====== بيانات النموذج في الذاكرة المحلية
-    window.formData = {}
+    // ========= إعدادات =========
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCQrG9O7EeWSqtjNludnMP8rukeeKqqVSY8aAKZRb_ZfuaSTc_LDWlDspGniPOQvN1zA/exec';
 
-    // ====== الصفحات والتنقل
-    const pages = Array.from(document.querySelectorAll('.page'));
+    // نستخدم البنود 1–6 ثم 13–36 (مطابق لنسختك الأصلية). إن أردت 7–12 أضفها لاحقًا.
+    const ITEM_NUMBERS = [1,2,3,4,5,6, 13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36];
+
+    // ========= إنشاء صفحات البنود ديناميكيًا (6 بنود في الصفحة) =========
+    function createItemBlock(n) {
+      return `
+        <div class="item-block">
+          <h3>البند ${n}</h3>
+          <p class="hint"><em>ضع نص البند هنا لو رغبت (اختياري)</em></p>
+
+          <div class="grid">
+            <div class="field">
+              <label>البند ${n} – وضوح</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – وضوح" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – ملاءمة</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – ملاءمة" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – شمولية</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – شمولية" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – قرار</label>
+              <div>
+                <label><input type="radio" name="البند ${n} – قرار" value="مناسب"> مناسب</label>
+                <label><input type="radio" name="البند ${n} – قرار" value="يحتاج تعديل"> يحتاج تعديل</label>
+                <label><input type="radio" name="البند ${n} – قرار" value="غير مناسب"> غير مناسب</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>البند ${n} – ملاحظات</label>
+            <textarea name="البند ${n} – ملاحظات" rows="3" placeholder="ملاحظات مختصرة"></textarea>
+          </div>
+
+          <hr />
+        </div>
+      `;
+    }
+
+    function createItemPages() {
+      const chunkSize = 6;
+      const pagesWrap = document.getElementById('pages');
+      let pageIndex = 2; // لدينا page0, page1 مسبقًا
+
+      for (let i = 0; i < ITEM_NUMBERS.length; i += chunkSize) {
+        const chunk = ITEM_NUMBERS.slice(i, i + chunkSize);
+        const blocks = chunk.map(n => createItemBlock(n)).join('');
+        const sec = document.createElement('section');
+        sec.className = 'page';
+        sec.id = 'page' + pageIndex;
+        sec.innerHTML = `
+          <h2>محاور البنود (${chunk[0]}–${chunk[chunk.length - 1]})</h2>
+          ${blocks}
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
+            <button class="btn" type="button" onclick="nextPage()">التالي</button>
+          </div>
+        `;
+        pagesWrap.appendChild(sec);
+        pageIndex++;
+      }
+    }
+
+    // ========= حالة ونقل الصفحات =========
+    window.formData = {};
+    let pages = [];
     let currentPage = 0;
+
+    function refreshPages() {
+      pages = Array.from(document.querySelectorAll('.page'));
+      updateProgress();
+    }
 
     function updateProgress() {
       const fill = document.getElementById('progressFill');
@@ -119,7 +287,7 @@
     function nextPage() { saveCurrentPageData(); goTo(currentPage + 1); }
     function prevPage() { saveCurrentPageData(); goTo(currentPage - 1); }
 
-    // ====== حفظ الصفحة الحالية بدون تكرار للـ checkbox
+    // ========= حفظ بيانات الصفحة الحالية =========
     function saveCurrentPageData() {
       const el = pages[currentPage];
       const inputs = el.querySelectorAll('input, textarea, select');
@@ -140,10 +308,10 @@
       });
 
       Object.assign(window.formData, pageData);
-      try { localStorage.setItem('evaluationFormData', JSON.stringify(window.formData)); } catch (e) {}
+      try { localStorage.setItem('evaluationFormData', JSON.stringify(window.formData)); } catch(e) {}
     }
 
-    // ====== إرسال إلى Google Apps Script (بصيغة x-www-form-urlencoded)
+    // ========= إرسال إلى Google Apps Script =========
     async function submitForm() {
       saveCurrentPageData();
       const params = new URLSearchParams();
@@ -152,7 +320,7 @@
         else params.append(k, v ?? '');
       }
       try {
-        await fetch('https://script.google.com/macros/s/AKfycbynE0vkK3HTcbkpRecHKpkcnPGS3MvelMvJboYvQKpQ4IOAK6bgOxnOlxbJghYpGbgQxQ/exec', {
+        await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
           body: params.toString(),
@@ -165,17 +333,10 @@
       }
     }
 
-    // ====== ربط الأزرار
-    document.getElementById('startBtn').addEventListener('click', () => goTo(1));
-    document.getElementById('next1').addEventListener('click', nextPage);
-    document.getElementById('prev1').addEventListener('click', prevPage);
-    document.getElementById('next2').addEventListener('click', nextPage);
-    document.getElementById('prev2').addEventListener('click', prevPage);
-    document.getElementById('prev3').addEventListener('click', prevPage);
-    document.getElementById('submitBtn').addEventListener('click', submitForm);
-
-    // تهيئة
-    updateProgress();
+    // ========= تهيئة =========
+    createItemPages();        // أنشئ صفحات البنود
+    refreshPages();           // حدّث قائمة الصفحات
+    updateProgress();         // تقدّم
   </script>
 </body>
 </html>
