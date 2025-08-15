@@ -7,7 +7,7 @@
   <style>
     body { font-family: system-ui,"Segoe UI",Tahoma,Arial; line-height:1.7; margin:0; background:#fafafa; color:#222; }
     .container { max-width:1000px; margin:24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.06); }
-    h1,h2 { margin-top:0; }
+    h1,h2,h3 { margin-top:0; }
     .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 16px; }
     .page { display:none; }
     .page.active { display:block; }
@@ -37,6 +37,13 @@
 
     /* شارة توضيحية أعلى التقييم الكلي */
     .overall-note { background:#f1f5ff; border:1px dashed #93c5fd; padding:8px 12px; border-radius:10px; font-size:.95em; color:#1e3a8a; }
+
+    /* جدول المعاينة */
+    .preview-section { margin: 16px 0 24px; }
+    .preview-table { width:100%; border-collapse: collapse; }
+    .preview-table th, .preview-table td { border:1px solid #e5e7eb; padding:8px 10px; vertical-align:top; }
+    .preview-table th { background:#f9fafb; text-align:right; white-space:nowrap; }
+    .muted { color:#6b7280; }
   </style>
 </head>
 <body>
@@ -188,6 +195,32 @@
       </div>
     </section>
 
+    <!-- صفحة المعاينة -->
+    <section class="page" id="pagePreview">
+      <h2>معاينة قبل الإرسال</h2>
+      <p class="hint">راجع الملخص أدناه. يمكنك الرجوع وتعديل أي قيمة، ثم العودة للمعاينة مجددًا.</p>
+
+      <div class="preview-section">
+        <h3>البيانات العامة</h3>
+        <table class="preview-table" id="previewGeneral"></table>
+      </div>
+
+      <div class="preview-section">
+        <h3>ملخص البنود</h3>
+        <table class="preview-table" id="previewItems"></table>
+      </div>
+
+      <div class="preview-section">
+        <h3>التقييمات النهائية</h3>
+        <table class="preview-table" id="previewFinals"></table>
+      </div>
+
+      <div class="navigation-buttons">
+        <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق (تعديل)</button>
+        <button class="btn" type="button" onclick="nextPage()">التالي (إرسال)</button>
+      </div>
+    </section>
+
     <!-- صفحة الإرسال -->
     <section class="page" id="page1000">
       <h2>إرسال التحكيم</h2>
@@ -204,11 +237,10 @@
     // ========= إعدادات =========
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCQrG9O7EeWSqtjNludnMP8rukeeKqqVSY8aAKZRb_ZfuaSTc_LDWlDspGniPOQvN1zA/exec';
     const STORAGE_KEY = 'evaluationFormData';
-
-    // نستخدم البنود 1–6 ثم 13–36 (مطابق لنسختك الأصلية).
     const ITEM_NUMBERS = [1,2,3,4,5,6, 13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36];
+    const PARTS = ['وضوح','ملاءمة','شمولية'];
 
-    // ========= إنشاء صفحات البنود ديناميكيًا (6 بنود في الصفحة) =========
+    // ========= إنشاء صفحات البنود ديناميكيًا =========
     function createItemBlock(n) {
       return `
         <div class="item-block">
@@ -287,353 +319,4 @@
     let currentPage = 0;
 
     function refreshPages() {
-      pages = Array.from(document.querySelectorAll('.page'));
-      updateProgress();
-    }
-
-    function updateProgress() {
-      const fill = document.getElementById('progressFill');
-      const progress = ((currentPage + 1) / pages.length) * 100;
-      fill.style.width = progress + '%';
-    }
-
-    function goTo(i) {
-      if (i < 0 || i >= pages.length) return;
-      pages[currentPage].classList.remove('active');
-      currentPage = i;
-      pages[currentPage].classList.add('active');
-      updateProgress();
-      window.scrollTo(0,0);
-
-      // عند الوصول لصفحة التقييم النهائي، احسب التقييم الكلي تلقائيًا
-      const id = pages[currentPage]?.id || '';
-      if (id === 'page999') {
-        computeOverallScore();
-      }
-    }
-
-    function nextPage() { saveCurrentPageData(); goTo(currentPage + 1); }
-    function prevPage() { saveCurrentPageData(); goTo(currentPage - 1); }
-
-    // ========= حفظ بيانات الصفحة الحالية =========
-    function saveCurrentPageData() {
-      const el = pages[currentPage];
-      const inputs = el.querySelectorAll('input, textarea, select');
-      const pageData = {};
-
-      inputs.forEach(input => {
-        const name = input.name;
-        if (!name) return;
-        const type = (input.type || '').toLowerCase();
-        if (type === 'checkbox') {
-          if (!pageData[name]) pageData[name] = [];
-          if (input.checked) pageData[name].push(input.value);
-        } else if (type === 'radio') {
-          if (input.checked) pageData[name] = input.value;
-        } else {
-          pageData[name] = input.value || '';
-        }
-      });
-
-      Object.assign(window.formData, pageData);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(window.formData)); } catch(e) {}
-    }
-
-    // ========= Helpers لفحص الحقول وإظهار الأخطاء =========
-    function clearInvalids() {
-      document.querySelectorAll('.field.invalid').forEach(el => el.classList.remove('invalid'));
-    }
-
-    function markInvalidFieldByInput(inputEl) {
-      const field = inputEl?.closest('.field') || inputEl?.parentElement;
-      if (field) field.classList.add('invalid');
-      return field;
-    }
-
-    function markInvalidRadioGroupByName(name) {
-      const radios = document.querySelectorAll(`input[type="radio"][name="${name}"]`);
-      if (!radios.length) return null;
-      const anyChecked = Array.from(radios).some(r => r.checked);
-      if (anyChecked) return null;
-      const field = radios[0].closest('.field') || radios[0].parentElement;
-      if (field) field.classList.add('invalid');
-      return field;
-    }
-
-    function pageIndexOfElement(el) {
-      const sec = el?.closest('.page');
-      return sec ? pages.indexOf(sec) : -1;
-    }
-
-    // ========= التحقّق الرئيسي قبل الإرسال =========
-    function validateForm() {
-      clearInvalids();
-      let firstInvalidField = null;
-      let firstInvalidPageIdx = -1;
-
-      // الحقول الأساسية
-      const requiredSingles = [
-        'اسم المُحكِّم',
-        'الصفة/الدور',
-        'سنوات الخبرة',
-        'التوصية النهائية'
-      ];
-
-      for (const name of requiredSingles) {
-        const el = document.querySelector(`[name="${name}"]`);
-        if (!el) continue;
-        let ok = true;
-
-        if (el.tagName === 'SELECT' || el.type === 'text' || el.type === 'email' || el.type === 'number') {
-          const val = (el.value || '').trim();
-          ok = val !== '';
-          if (name === 'سنوات الخبرة') {
-            const n = Number(val);
-            ok = ok && !Number.isNaN(n) && n >= 0 && n <= 60;
-          }
-        }
-
-        if (!ok) {
-          const field = markInvalidFieldByInput(el);
-          if (!firstInvalidField) {
-            firstInvalidField = field || el;
-            firstInvalidPageIdx = pageIndexOfElement(firstInvalidField);
-          }
-        }
-      }
-
-      // قرار لكل بند (ITEM_NUMBERS)
-      for (const n of ITEM_NUMBERS) {
-        const field = markInvalidRadioGroupByName(`البند ${n} – قرار`);
-        if (field && !firstInvalidField) {
-          firstInvalidField = field;
-          firstInvalidPageIdx = pageIndexOfElement(field);
-        }
-      }
-
-      // لو يوجد نقص، ننتقل لأول صفحة فيها خطأ
-      if (firstInvalidField) {
-        if (firstInvalidPageIdx >= 0 && firstInvalidPageIdx !== currentPage) {
-          goTo(firstInvalidPageIdx);
-          setTimeout(() => firstInvalidField.scrollIntoView({behavior:'smooth', block:'center'}), 200);
-        } else {
-          firstInvalidField.scrollIntoView({behavior:'smooth', block:'center'});
-        }
-        alert('رجاءً استكمل الحقول المطلوبة المعلّمة بالأحمر.');
-        return false;
-      }
-      return true;
-    }
-
-    // ========= حِسبة تلقائية للتقييم الكلي =========
-    function computeOverallScore() {
-      // تأكد أن آخر إدخالات محفوظة
-      saveCurrentPageData();
-
-      const parts = ['وضوح','ملاءمة','شمولية'];
-      const values = [];
-
-      for (const n of ITEM_NUMBERS) {
-        for (const p of parts) {
-          const key = `البند ${n} – ${p}`;
-          const v = Number(window.formData[key]);
-          if (!Number.isNaN(v)) values.push(v);
-        }
-      }
-
-      const badge = document.getElementById('overallBadge');
-      const select = document.getElementById('overallSelect');
-
-      if (!values.length) {
-        if (badge) badge.textContent = 'لم تُدخَل درجات كافية لحساب التقييم الكلي بعد.';
-        if (select) select.value = '';
-        return null;
-      }
-
-      const avg = values.reduce((a,b)=>a+b,0) / values.length;
-      const rounded = Math.round(avg);
-
-      if (select) select.value = String(rounded);
-      if (badge) badge.textContent = `المتوسط = ${avg.toFixed(2)}  →  تم ضبط "التقييم الكلي" تلقائيًا على ${rounded}`;
-
-      return { avg, rounded, count: values.length };
-    }
-
-    // ========= حفظ/استرجاع/تفريغ محلي =========
-    function saveToLocal() {
-      saveCurrentPageData();
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(window.formData));
-        alert('تم الحفظ محليًا على هذا المتصفح.');
-      } catch (e) {
-        alert('تعذّر الحفظ المحلي (قد تكون مساحة التخزين ممتلئة).');
-      }
-    }
-
-    function loadFromLocal() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) { alert('لا توجد بيانات محفوظة محليًا.'); return; }
-        const data = JSON.parse(raw);
-        if (!data || typeof data !== 'object') { alert('ملف محلي تالف.'); return; }
-        window.formData = data;
-        applyFormDataToInputs();
-        alert('تم استرجاع البيانات للمحقّق الحالي.');
-      } catch (e) {
-        alert('تعذّر الاسترجاع.');
-      }
-    }
-
-    function clearAll() {
-      if (!confirm('سيتم مسح كل المدخلات المحلية لهذه الاستمارة. هل أنت متأكد؟')) return;
-      window.formData = {};
-      localStorage.removeItem(STORAGE_KEY);
-      // إفراغ الحقول
-      document.querySelectorAll('input, textarea, select').forEach(el => {
-        if (el.type === 'radio' || el.type === 'checkbox') el.checked = false;
-        else el.value = '';
-      });
-      alert('تم التفريغ.');
-    }
-
-    function applyFormDataToInputs() {
-      // مرّر القيم من formData إلى الحقول
-      document.querySelectorAll('input, textarea, select').forEach(el => {
-        const name = el.name;
-        if (!name) return;
-        const val = window.formData[name];
-        const type = (el.type || '').toLowerCase();
-        if (val === undefined) return;
-
-        if (type === 'radio') {
-          el.checked = (String(val) === String(el.value));
-        } else if (type === 'checkbox') {
-          if (Array.isArray(val)) {
-            el.checked = val.includes(el.value);
-          } else {
-            el.checked = String(val) === String(el.value);
-          }
-        } else {
-          el.value = val;
-        }
-      });
-      updateProgress();
-    }
-
-    // ========= إرسال إلى Google Apps Script (مع التحقّق) =========
-    async function submitForm() {
-      saveCurrentPageData();
-
-      // توليد التقييم الكلي قبل الإرسال
-      computeOverallScore();
-
-      if (!validateForm()) {
-        return; // لا نرسل إذا كانت هناك أخطاء
-      }
-
-      const params = new URLSearchParams();
-      for (const [k, v] of Object.entries(window.formData)) {
-        if (Array.isArray(v)) params.append(k, v.join('; '));
-        else params.append(k, v ?? '');
-      }
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-          body: params.toString(),
-          mode: 'no-cors'
-        });
-        alert('تم إرسال النموذج ✔');
-      } catch (e) {
-        console.error(e);
-        alert('تعذّر الإرسال. تأكد من إعداد Web App.');
-      }
-    }
-
-    // ========= تهيئة =========
-    function createItemPages() {
-      const chunkSize = 6;
-      const pagesWrap = document.getElementById('pages');
-      let pageIndex = 2; // لدينا page0, page1 مسبقًا
-
-      for (let i = 0; i < ITEM_NUMBERS.length; i += chunkSize) {
-        const chunk = ITEM_NUMBERS.slice(i, i + chunkSize);
-        const blocks = chunk.map(n => createItemBlock(n)).join('');
-        const sec = document.createElement('section');
-        sec.className = 'page';
-        sec.id = 'page' + pageIndex;
-        sec.innerHTML = `
-          <h2>محاور البنود (${chunk[0]}–${chunk[chunk.length - 1]})</h2>
-          ${blocks}
-          <div class="navigation-buttons">
-            <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
-            <button class="btn" type="button" onclick="nextPage()">التالي</button>
-          </div>
-        `;
-        pagesWrap.appendChild(sec);
-        pageIndex++;
-      }
-    }
-
-    function createItemBlock(n) {
-      return `
-        <div class="item-block">
-          <h3>البند ${n}</h3>
-          <p class="hint"><em>ضع نص البند هنا لو رغبت (اختياري)</em></p>
-
-          <div class="grid">
-            <div class="field">
-              <label>البند ${n} – وضوح</label>
-              <div>
-                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – وضوح" value="${i}"> ${i}</label>`).join(' ')}
-              </div>
-            </div>
-
-            <div class="field">
-              <label>البند ${n} – ملاءمة</label>
-              <div>
-                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – ملاءمة" value="${i}"> ${i}</label>`).join(' ')}
-              </div>
-            </div>
-
-            <div class="field">
-              <label>البند ${n} – شمولية</label>
-              <div>
-                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – شمولية" value="${i}"> ${i}</label>`).join(' ')}
-              </div>
-            </div>
-
-            <div class="field">
-              <label>البند ${n} – قرار</label>
-              <div>
-                <label><input type="radio" name="البند ${n} – قرار" value="مناسب"> مناسب</label>
-                <label><input type="radio" name="البند ${n} – قرار" value="يحتاج تعديل"> يحتاج تعديل</label>
-                <label><input type="radio" name="البند ${n} – قرار" value="غير مناسب"> غير مناسب</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>البند ${n} – ملاحظات</label>
-            <textarea name="البند ${n} – ملاحظات" rows="3" placeholder="ملاحظات مختصرة"></textarea>
-          </div>
-
-          <hr />
-        </div>
-      `;
-    }
-
-    // إنشاء صفحات البنود ثم تهيئة
-    createItemPages();
-    refreshPages();
-    updateProgress();
-
-    // تلميح صغير لو فيه بيانات محفوظة
-    try {
-      if (localStorage.getItem(STORAGE_KEY)) {
-        console.log('بيانات محفوظة محليًا متوفرة—استخدم زر "استرجاع".');
-      }
-    } catch (e) {}
-  </script>
-</body>
-</html>
+      pages = Array.
