@@ -27,6 +27,10 @@
       .grid { grid-template-columns: 1fr; }
       .grid .field:nth-child(4) { grid-column: span 1; }
     }
+
+    /* إبراز الحقول الناقصة */
+    .field.invalid { border:1px solid #e11d48 !important; background:#fff1f2; padding:10px; border-radius:10px; }
+    .field.invalid label::after { content:" * مطلوب"; color:#e11d48; margin-right:6px; font-weight:700; }
   </style>
 </head>
 <body>
@@ -34,7 +38,6 @@
     <h1>استمارة التحكيم – النسخة الكاملة</h1>
     <div class="progress"><span id="progressFill"></span></div>
 
-    <!-- سيتم إنشاء الصفحات البنودية برمجيًا -->
     <div id="pages">
       <!-- الصفحة 0: ترحيب -->
       <section class="page active" id="page0">
@@ -88,7 +91,7 @@
           <button class="btn" type="button" onclick="nextPage()">التالي</button>
         </div>
       </section>
-      <!-- الصفحات البنودية سيتم توليدها هنا -->
+      <!-- الصفحات البنودية ستُولَّد برمجيًا -->
     </div>
 
     <!-- صفحة التعليقات العامة والتقييم -->
@@ -311,9 +314,100 @@
       try { localStorage.setItem('evaluationFormData', JSON.stringify(window.formData)); } catch(e) {}
     }
 
-    // ========= إرسال إلى Google Apps Script =========
+    // ========= Helpers لفحص الحقول وإظهار الأخطاء =========
+    function clearInvalids() {
+      document.querySelectorAll('.field.invalid').forEach(el => el.classList.remove('invalid'));
+    }
+
+    function markInvalidFieldByInput(inputEl) {
+      const field = inputEl?.closest('.field') || inputEl?.parentElement;
+      if (field) field.classList.add('invalid');
+      return field;
+    }
+
+    function markInvalidRadioGroupByName(name) {
+      const radios = document.querySelectorAll(`input[type="radio"][name="${name}"]`);
+      if (!radios.length) return null;
+      const anyChecked = Array.from(radios).some(r => r.checked);
+      if (anyChecked) return null;
+      const field = radios[0].closest('.field') || radios[0].parentElement;
+      if (field) field.classList.add('invalid');
+      return field;
+    }
+
+    function pageIndexOfElement(el) {
+      const sec = el?.closest('.page');
+      return sec ? pages.indexOf(sec) : -1;
+    }
+
+    // ========= التحقّق الرئيسي قبل الإرسال =========
+    function validateForm() {
+      clearInvalids();
+      let firstInvalidField = null;
+      let firstInvalidPageIdx = -1;
+
+      // الحقول الأساسية
+      const requiredSingles = [
+        'اسم المُحكِّم',
+        'الصفة/الدور',
+        'سنوات الخبرة',
+        'التوصية النهائية'
+      ];
+
+      for (const name of requiredSingles) {
+        const el = document.querySelector(`[name="${name}"]`);
+        if (!el) continue;
+        let ok = true;
+
+        if (el.tagName === 'SELECT' || el.type === 'text' || el.type === 'email' || el.type === 'number') {
+          const val = (el.value || '').trim();
+          ok = val !== '';
+          if (name === 'سنوات الخبرة') {
+            const n = Number(val);
+            ok = ok && !Number.isNaN(n) && n >= 0 && n <= 60;
+          }
+        }
+
+        if (!ok) {
+          const field = markInvalidFieldByInput(el);
+          if (!firstInvalidField) {
+            firstInvalidField = field || el;
+            firstInvalidPageIdx = pageIndexOfElement(firstInvalidField);
+          }
+        }
+      }
+
+      // قرار لكل بند (ITEM_NUMBERS)
+      for (const n of ITEM_NUMBERS) {
+        const field = markInvalidRadioGroupByName(`البند ${n} – قرار`);
+        if (field && !firstInvalidField) {
+          firstInvalidField = field;
+          firstInvalidPageIdx = pageIndexOfElement(field);
+        }
+      }
+
+      // لو يوجد نقص، ننتقل لأول صفحة فيها خطأ
+      if (firstInvalidField) {
+        if (firstInvalidPageIdx >= 0 && firstInvalidPageIdx !== currentPage) {
+          goTo(firstInvalidPageIdx);
+          setTimeout(() => firstInvalidField.scrollIntoView({behavior:'smooth', block:'center'}), 200);
+        } else {
+          firstInvalidField.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+        alert('رجاءً استكمل الحقول المطلوبة المعلّمة بالأحمر.');
+        return false;
+      }
+      return true;
+    }
+
+    // ========= إرسال إلى Google Apps Script (مع التحقّق) =========
     async function submitForm() {
       saveCurrentPageData();
+
+      if (!validateForm()) {
+        return; // لا نرسل إذا كانت هناك أخطاء
+      }
+
       const params = new URLSearchParams();
       for (const [k, v] of Object.entries(window.formData)) {
         if (Array.isArray(v)) params.append(k, v.join('; '));
@@ -334,9 +428,81 @@
     }
 
     // ========= تهيئة =========
-    createItemPages();        // أنشئ صفحات البنود
-    refreshPages();           // حدّث قائمة الصفحات
-    updateProgress();         // تقدّم
+    function createItemPages() {
+      const chunkSize = 6;
+      const pagesWrap = document.getElementById('pages');
+      let pageIndex = 2; // لدينا page0, page1 مسبقًا
+
+      for (let i = 0; i < ITEM_NUMBERS.length; i += chunkSize) {
+        const chunk = ITEM_NUMBERS.slice(i, i + chunkSize);
+        const blocks = chunk.map(n => createItemBlock(n)).join('');
+        const sec = document.createElement('section');
+        sec.className = 'page';
+        sec.id = 'page' + pageIndex;
+        sec.innerHTML = `
+          <h2>محاور البنود (${chunk[0]}–${chunk[chunk.length - 1]})</h2>
+          ${blocks}
+          <div class="navigation-buttons">
+            <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق</button>
+            <button class="btn" type="button" onclick="nextPage()">التالي</button>
+          </div>
+        `;
+        pagesWrap.appendChild(sec);
+        pageIndex++;
+      }
+    }
+
+    function createItemBlock(n) {
+      return `
+        <div class="item-block">
+          <h3>البند ${n}</h3>
+          <p class="hint"><em>ضع نص البند هنا لو رغبت (اختياري)</em></p>
+
+          <div class="grid">
+            <div class="field">
+              <label>البند ${n} – وضوح</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – وضوح" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – ملاءمة</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – ملاءمة" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – شمولية</label>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – شمولية" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البند ${n} – قرار</label>
+              <div>
+                <label><input type="radio" name="البند ${n} – قرار" value="مناسب"> مناسب</label>
+                <label><input type="radio" name="البند ${n} – قرار" value="يحتاج تعديل"> يحتاج تعديل</label>
+                <label><input type="radio" name="البند ${n} – قرار" value="غير مناسب"> غير مناسب</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>البند ${n} – ملاحظات</label>
+            <textarea name="البند ${n} – ملاحظات" rows="3" placeholder="ملاحظات مختصرة"></textarea>
+          </div>
+
+          <hr />
+        </div>
+      `;
+    }
+
+    createItemPages();
+    refreshPages();
+    updateProgress();
   </script>
 </body>
 </html>
