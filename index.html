@@ -864,4 +864,48 @@
                                 شكراً جزيلاً لمساهمتكم القيمة!<br>
                                 تم حفظ تقييمكم وسيساهم في تطوير أداة بحثية عالية الجودة.
                             </p>
-                            <div style="background: #
+                            <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                                <p style="color: #1976d2; margin: 0;">
+                                    <strong>💡 ملاحظة:</strong> يمكنكم إغلاق هذه النافذة الآن.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // حذف البيانات المحفوظة
+                    localStorage.removeItem('evaluationFormData');
+                } else {
+                    throw new Error('فشل في الإرسال');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى أو التواصل مع الباحث.');
+            }
+        }
+
+        // تهيئة الصفحة
+        function initializePage() {
+            createItemPages();
+            updateProgress();
+            loadSavedData();
+            setupAutoSave();
+            
+            // إضافة مستمع لحفظ البيانات عند مغادرة الصفحة
+            window.addEventListener('beforeunload', function() {
+                saveCurrentPageData();
+            });
+            
+            // تحذير من فقدان البيانات
+            window.addEventListener('beforeunload', function(e) {
+                if (currentPage > 0 && Object.keys(formData).length > 0) {
+                    e.preventDefault();
+                    e.returnValue = 'سيتم فقدان البيانات غير المحفوظة. هل تريد المغادرة؟';
+                }
+            });
+        }
+
+        // تشغيل التهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
