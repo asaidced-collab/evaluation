@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استمارة تحكيم الممارسات التربوية الدامجة</title>
+    <title>تحكيم أداة قياس الممارسات التربوية الدامجة</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -11,7 +11,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh; padding: 20px; line-height: 1.6;
         }
-        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
         .header { background: linear-gradient(45deg, #2c3e50, #3498db); color: white; padding: 30px; text-align: center; }
         .header h1 { font-size: 2.2em; margin-bottom: 10px; }
         .header p { font-size: 1.1em; opacity: 0.9; }
@@ -19,84 +19,239 @@
         .page { display: none; animation: fadeIn 0.5s ease-in; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
-        .progress-bar { width: 100%; height: 8px; background: #ecf0f1; border-radius: 4px; margin-bottom: 30px; overflow: hidden; }
+        
+        .progress-container { margin-bottom: 30px; }
+        .progress-bar { width: 100%; height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(45deg, #3498db, #2980b9); border-radius: 4px; transition: width 0.5s ease; width: 0%; }
+        .progress-text { text-align: center; margin-top: 8px; font-size: 0.9em; color: #666; }
+        
+        .save-status { 
+            position: fixed; bottom: 20px; right: 20px; 
+            background: #27ae60; color: white; padding: 10px 15px; 
+            border-radius: 25px; font-size: 0.9em; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .save-status.show { opacity: 1; }
+        
         .page-title { font-size: 1.8em; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #3498db; }
         .page-subtitle { font-size: 1.1em; color: #666; margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        
+        .info-box { background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #27ae60; }
+        .info-box h3 { color: #27ae60; margin-bottom: 10px; }
+        .info-box p { margin-bottom: 8px; }
+        
+        .expert-role-box { background: #fff3cd; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #ffc107; }
+        .expert-role-box h3 { color: #856404; margin-bottom: 10px; }
+        
+        .researcher-info-box { background: #d1ecf1; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #17a2b8; }
+        .researcher-info-box h3 { color: #0c5460; margin-bottom: 10px; }
+        .researcher-info-box p { margin-bottom: 5px; color: #0c5460; }
+        
+        .privacy-info-box { background: #f8d7da; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #dc3545; }
+        .privacy-info-box h3 { color: #721c24; margin-bottom: 10px; }
+        .privacy-info-box p { margin-bottom: 5px; color: #721c24; }
+        
+        .logic-info-box { background: #e2e3e5; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 5px solid #6c757d; }
+        .logic-info-box h3 { color: #495057; margin-bottom: 10px; }
+        .logic-info-box ul { padding-right: 20px; }
+        .logic-info-box li { margin-bottom: 5px; color: #495057; }
+        
+        .axis-header { 
+            background: linear-gradient(45deg, #3498db, #2980b9); 
+            color: white; padding: 20px; margin: 25px 0 15px 0; 
+            border-radius: 10px; text-align: center;
+        }
+        .axis-header h3 { font-size: 1.3em; margin-bottom: 8px; }
+        .axis-header p { font-size: 0.95em; opacity: 0.9; }
+        .axis-reference { font-size: 0.85em; margin-top: 8px; font-style: italic; }
+        
         .form-group { margin-bottom: 25px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #3498db; }
-        .radio-group { display: flex; gap: 15px; margin-bottom: 10px; }
-        .radio-group label { font-weight: normal; margin-bottom: 0; display: flex; align-items: center; cursor: pointer; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; transition: all 0.3s; }
-        .radio-group label:hover { border-color: #3498db; background: #f0f8ff; }
-        .radio-group input[type="radio"] { margin-left: 8px; margin-right: 5px; }
-        .radio-group input[type="radio"]:checked + span { color: #3498db; font-weight: bold; }
-        .item-card { background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 25px; margin-bottom: 25px; transition: all 0.3s; position: relative; }
+        
+        .radio-group-vertical { display: flex; flex-direction: column; gap: 10px; direction: rtl; }
+        .radio-group-vertical label { 
+            font-weight: normal; margin-bottom: 0; display: flex; align-items: center; 
+            cursor: pointer; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; transition: all 0.3s; 
+            background: #fff; min-height: 50px; justify-content: flex-start; gap: 0.5rem;
+        }
+        .radio-group-vertical label:hover { border-color: #3498db; background: #f0f8ff; }
+        .radio-group-vertical input[type="radio"] { margin-right: 0; margin-left: 10px; flex-shrink: 0; }
+        .radio-group-vertical input[type="radio"]:checked + span { color: #3498db; font-weight: bold; }
+        .radio-group-vertical label:has(input[type="radio"]:checked) { border-color: #3498db; background: #e3f2fd; }
+        
+        .item-card { 
+            background: white; border: 2px solid #e9ecef; border-radius: 15px; 
+            padding: 25px; margin-bottom: 30px; transition: all 0.3s; position: relative; 
+        }
         .item-card:hover { border-color: #3498db; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(52, 152, 219, 0.15); }
         .item-card.invalid { border-color: #e74c3c; background-color: #fff5f5; }
-        .item-number { position: absolute; top: -10px; right: 15px; background: #3498db; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em; font-weight: bold; }
-        .item-text { font-size: 1.1em; color: #2c3e50; margin-bottom: 20px; padding-right: 60px; line-height: 1.7; font-weight: 500; }
-        .conditional-section { display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db; }
-        .conditional-section.show { display: block; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 200px; } }
-        .btn { background: linear-gradient(45deg, #3498db, #2980b9); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: all 0.3s; margin: 10px 5px; }
+        
+        .item-number { 
+            position: absolute; top: -12px; right: 20px; 
+            background: #3498db; color: white; padding: 6px 15px; 
+            border-radius: 20px; font-size: 0.9em; font-weight: bold; 
+        }
+        
+        .item-text { 
+            font-size: 1.1em; color: #2c3e50; margin-bottom: 25px; 
+            padding-right: 80px; line-height: 1.7; font-weight: 500; 
+            background: #f8f9fa; padding: 15px; border-radius: 8px;
+        }
+        
+        .evaluation-container { margin-top: 20px; }
+        .evaluation-table { 
+            width: 100%; border-collapse: collapse; margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;
+            direction: rtl; table-layout: fixed;
+        }
+        .evaluation-table th { 
+            background: #3498db; color: white; padding: 15px; text-align: center; font-weight: bold;
+        }
+        .evaluation-table .sub-header { 
+            background: #5dade2; font-size: 0.9em; font-weight: normal;
+        }
+        .evaluation-table td { 
+            padding: 15px; text-align: center; border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .star-rating { 
+            display: inline-flex; direction: rtl; flex-direction: row-reverse; 
+            gap: 5px; justify-content: center; 
+        }
+        .star { 
+            font-size: 1.8em; color: #ccc; cursor: pointer; transition: transform 0.2s;
+            user-select: none;
+        }
+        .star::before { content: "☆"; }
+        .star.active { color: #ffc107; }
+        .star.active::before { content: "⭐"; }
+        .star:hover { transform: scale(1.1); }
+        
+        .comments-section { margin-top: 20px; }
+        .comments-section label { font-weight: bold; color: #555; margin-bottom: 10px; display: block; }
+        .comments-section textarea { 
+            min-height: 100px; resize: vertical; width: 100%; padding: 15px;
+            border: 2px solid #ddd; border-radius: 8px; font-size: 14px;
+        }
+        .comments-section textarea:focus { border-color: #3498db; outline: none; }
+        
+        .btn { 
+            background: linear-gradient(45deg, #3498db, #2980b9); color: white; border: none; 
+            padding: 15px 30px; border-radius: 8px; font-size: 1.1em; cursor: pointer; 
+            transition: all 0.3s; margin: 10px 5px; 
+        }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3); }
         .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-secondary { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
-        .navigation-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-        .error-message { color: #e74c3c; background: #fdf2f2; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
-        .invalid { border-color: #e74c3c !important; background-color: #fff5f5 !important; }
-        .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
-        .checkbox-group label { display: flex; align-items: center; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
-        .checkbox-group label:hover { border-color: #3498db; background: #f0f8ff; }
-        .checkbox-group input[type="checkbox"] { margin-left: 8px; margin-right: 5px; }
+        
+        .navigation-buttons { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; 
+        }
+        
+        .error-message { 
+            color: #e74c3c; background: #fdf2f2; padding: 10px; border-radius: 5px; 
+            margin-top: 10px; display: none; 
+        }
+        
+        .summary-section { 
+            background: #e8f5e8; padding: 25px; border-radius: 10px; margin: 20px 0;
+            border-left: 5px solid #27ae60;
+        }
+        .summary-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .stat-box { 
+            background: white; padding: 20px; border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;
+        }
+        .stat-box h4 { color: #2980b9; margin-bottom: 15px; }
+        .stat-box .stat-number { font-size: 2em; font-weight: bold; color: #27ae60; }
+        
         @media (max-width: 768px) {
             .container { margin: 10px; border-radius: 10px; }
             .content { padding: 20px; }
-            .radio-group { flex-direction: column; }
+            .evaluation-table { font-size: 0.9em; }
+            .star { font-size: 1.5em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>استمارة تحكيم الممارسات التربوية الدامجة</h1>
-            <p>المقياس الميداني لمدى التزام أساتذة التعليم الابتدائي بالممارسات التربوية الدامجة للتلاميذ في وضعية إعاقة ذهنية</p>
+            <h1>🎯 تحكيم أداة قياس الممارسات التربوية الدامجة</h1>
+            <p>أداة بحثية لقياس التزام أساتذة التعليم الابتدائي بالممارسات الدامجة للتلاميذ في وضعية إعاقة ذهنية</p>
         </div>
 
         <div class="content">
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="progress-container">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText">الصفحة 1 من 8</div>
+            </div>
 
             <!-- صفحة الترحيب -->
             <div class="page active" id="page0">
-                <div class="page-title">مرحباً بكم في استمارة التحكيم</div>
-                <div class="page-subtitle">
-                    <strong>الغرض من التحكيم:</strong> تقييم جودة أداة قياس مدى التزام أساتذة التعليم الابتدائي بالممارسات التربوية الدامجة وفق المرجعيات المغربية الرسمية.
+                <div class="page-title">مرحباً بكم في تحكيم الأداة البحثية</div>
+                
+                <div class="researcher-info-box">
+                    <h3>📋 معلومات الباحث</h3>
+                    <p><strong>الباحث:</strong> عبد المجيد سعيد - طالب دكتوراه</p>
+                    <p><strong>الجامعة:</strong> جامعة القاضي عياض، مراكش - المغرب</p>
+                    <p><strong>التخصص:</strong> علم النفس الاجتماعي</p>
+                    <p><strong>الغرض:</strong> سيُوظف هذا المقياس في إطار البحث الأكاديمي</p>
+                    <p><strong>التواصل:</strong> a.said.ced@uca.ac.ma</p>
                 </div>
 
-                <div style="background: white; padding: 25px; border-radius: 10px; border: 2px solid #3498db; margin: 25px 0;">
-                    <h3 style="color: #2980b9; margin-bottom: 15px;">المرجعيات المعتمدة:</h3>
-                    <ul style="list-style-type: disc; padding-right: 20px; color: #555;">
-                        <li>الإطار المرجعي للتربية الدامجة لفائدة الأطفال في وضعية إعاقة – وزارة التربية الوطنية (2019)</li>
-                        <li>دليل الأستاذ للتربية الدامجة</li>
-                        <li>القرار الوزاري رقم 047.19 بشأن التربية الدامجة للتلميذات والتلاميذ في وضعية إعاقة</li>
+                <div class="privacy-info-box">
+                    <h3>🔒 سرية البيانات والمشاركة</h3>
+                    <p>• جميع المعلومات سرية ولن تُستخدم إلا لأغراض البحث العلمي</p>
+                    <p>• لن يتم نشر أسماء المحكمين أو ربط البيانات بهويتكم</p>
+                    <p>• المشاركة اختيارية ويمكنكم التوقف في أي وقت</p>
+                    <p>• البيانات محفوظة وفق معايير الأمان الأكاديمي</p>
+                </div>
+                
+                <div class="info-box">
+                    <h3>🎯 الأداة المراد تحكيمها:</h3>
+                    <p><strong>العنوان:</strong> مقياس الالتزام الذاتي بالممارسات التربوية الدامجة لفائدة التلاميذ في وضعية إعاقة ذهنية</p>
+                    <p><strong>الفئة المستهدفة:</strong> أساتذة التعليم الابتدائي المغاربة العاملون مع تلاميذ في وضعية إعاقة ذهنية</p>
+                    <p><strong>نوع التقييم:</strong> تقييم ذاتي للأستاذ حول ممارساته المهنية</p>
+                    <p><strong>المرجعيات:</strong> الإطار المرجعي للتربية الدامجة (2019)، دليل الأستاذ، القرار الوزاري 047.19</p>
+                </div>
+
+                <div class="expert-role-box">
+                    <h3>📋 دورك كمحكم:</h3>
+                    <p>هذا المقياس موجه للأساتذة الدامجين، حيث يقيم كل أستاذ <strong>ذاتياً</strong> مدى تطبيقه للممارسات التربوية الدامجة. دورك كمحكم هو تقييم مدى <strong>ملاءمة ووضوح وضرورة</strong> البنود الـ36 التي ستُعرض على الأساتذة لتقييم ممارساتهم. الهدف هو التأكد من أن هذه الممارسات التي تعبر عنها بنود المقياس مطلوبة فعلاً من الأستاذ في إطار التصور المغربي للتربية الدامجة للتلاميذ في وضعية إعاقة ذهنية.</p>
+                </div>
+
+                <div class="logic-info-box">
+                    <h3>🔧 منطق بناء الأداة:</h3>
+                    <p>الدمج يتجلى عملياً في مجموعة من الممارسات التربوية، التي يضطلع بها الأستاذ مع تلاميذه في وضعية إعاقة ذهنية، وهذه الممارسات العملية تتجلى في:</p>
+                    <ul>
+                        <li>التشخيص التربوي</li>
+                        <li>التخطيط البيداغوجي الفردي وتكييف التعلمات</li>
+                        <li>الدعم الصفّي وبناء البيئة الدامجة</li>
+                        <li>الاستفادة من قاعة الموارد والتعلمات الداعمة</li>
+                        <li>التقويم</li>
+                        <li>التوثيق والمتابعة</li>
                     </ul>
+                    <p>ونحن سنترجم هذه المحاور العامة إلى مؤشرات إجرائية يحدد الأستاذ وفق مقياس ليكرت 5 مدى تطبيقه لها.</p>
                 </div>
 
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 25px 0;">
-                    <h4 style="color: #27ae60; margin-bottom: 10px;">ما المطلوب منكم:</h4>
-                    <p>• تقييم 36 بند وفق نهج مبسط وسريع</p>
-                    <p>• لكل بند: اختيار (مناسب / يحتاج تعديل / غير مناسب)</p>
-                    <p>• الوقت المتوقع: 20-30 دقيقة</p>
-                    <p>• يتم الحفظ التلقائي كل 30 ثانية</p>
+                <div style="background: #d4edda; border: 2px solid #c3e6cb; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h4 style="color: #155724; margin-bottom: 10px;">⏱️ ما المطلوب منكم:</h4>
+                    <p style="color: #155724; margin: 5px 0;">• تقييم 36 بند موزع على 6 محاور</p>
+                    <p style="color: #155724; margin: 5px 0;">• لكل بند: 3 تقييمات بنظام النجوم (ملاءمة، وضوح، ضرورة)</p>
+                    <p style="color: #155724; margin: 5px 0;">• تعليق اختياري على كل بند</p>
+                    <p style="color: #155724; margin: 5px 0;">• الوقت المتوقع: 25-35 دقيقة</p>
+                    <p style="color: #155724; margin: 5px 0;">• الحفظ التلقائي: كل 30 ثانية</p>
                 </div>
 
                 <div class="navigation-buttons">
                     <div></div>
-                    <button class="btn" onclick="nextPage()">البدء في التحكيم</button>
+                    <button class="btn" onclick="nextPage()">🚀 البدء في التحكيم</button>
                 </div>
             </div>
 
@@ -106,37 +261,42 @@
                 <div class="page-subtitle">معلومات عامة تساعد في توثيق عملية التحكيم</div>
 
                 <div class="form-group">
-                    <label>اسم المُحكِّم *</label>
+                    <label>اسم المحكم *</label>
                     <input type="text" name="expert_name" placeholder="الاسم الكامل">
                 </div>
 
                 <div class="form-group">
                     <label>الصفة/الدور *</label>
                     <select name="expert_role">
-                        <option value="">اختر...</option>
-                        <option value="عضو هيئة تدريس">عضو هيئة تدريس</option>
-                        <option value="باحث">باحث</option>
-                        <option value="مشرف أكاديمي">مشرف أكاديمي</option>
-                        <option value="خبير ميداني">خبير ميداني</option>
-                        <option value="مفتش تربوي">مفتش تربوي</option>
-                        <option value="مدير مؤسسة تعليمية">مدير مؤسسة تعليمية</option>
-                        <option value="أخرى">أخرى</option>
+                        <option value="">اختر الصفة/الدور...</option>
+                        <option value="أستاذ جامعي متخصص في التربية الدامجة">أستاذ جامعي متخصص في التربية الدامجة</option>
+                        <option value="باحث في التربية الخاصة/الدامجة">باحث في التربية الخاصة/الدامجة</option>
+                        <option value="مفتش تربوي (تعليم ابتدائي)">مفتش تربوي (تعليم ابتدائي)</option>
+                        <option value="خبير في التربية الدامجة">خبير في التربية الدامجة</option>
+                        <option value="مكون في مجال التربية الدامجة">مكون في مجال التربية الدامجة</option>
+                        <option value="مستشار في التربية الخاصة">مستشار في التربية الخاصة</option>
+                        <option value="أخرى">أخرى (يرجى التحديد أدناه)</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>سنوات الخبرة *</label>
-                    <input type="number" name="years_experience" min="0" max="60" placeholder="عدد السنوات">
+                <div class="form-group" id="other-role-group" style="display: none;">
+                    <label>يرجى تحديد الصفة/الدور:</label>
+                    <input type="text" name="expert_role_other" placeholder="اذكر الصفة...">
                 </div>
 
                 <div class="form-group">
-                    <label>طبيعة الخبرة بالتربية الدامجة</label>
+                    <label>سنوات الخبرة في مجال التربية الدامجة/الخاصة *</label>
+                    <input type="number" name="years_experience" min="0" max="50" placeholder="عدد السنوات">
+                </div>
+
+                <div class="form-group">
+                    <label>طبيعة الخبرة في التربية الدامجة</label>
                     <select name="experience_type">
-                        <option value="">اختر...</option>
-                        <option value="تدريس">تدريس</option>
-                        <option value="بحث">بحث</option>
-                        <option value="إدارة/تنفيذ">إدارة/تنفيذ</option>
-                        <option value="تدريب معلمين">تدريب معلمين</option>
+                        <option value="">اختر طبيعة الخبرة...</option>
+                        <option value="بحث أكاديمي وعلمي">بحث أكاديمي وعلمي</option>
+                        <option value="تكوين وتدريب الأساتذة">تكوين وتدريب الأساتذة</option>
+                        <option value="تفتيش وإشراف تربوي">تفتيش وإشراف تربوي</option>
+                        <option value="استشارة ومرافقة ميدانية">استشارة ومرافقة ميدانية</option>
                         <option value="أخرى">أخرى</option>
                     </select>
                 </div>
@@ -154,9 +314,36 @@
                 </div>
             </div>
 
-            <!-- صفحة التعليقات النهائية -->
-            <div class="page" id="final-page">
-                <div class="page-title">تعليقات نهائية</div>
+            <!-- صفحة الملخص النهائي -->
+            <div class="page" id="summary-page">
+                <div class="page-title">📊 ملخص تحكيمك</div>
+                
+                <div class="summary-section">
+                    <h3 style="color: #27ae60; margin-bottom: 15px;">إحصائيات التحكيم</h3>
+                    <div class="summary-stats">
+                        <div class="stat-box">
+                            <h4>البنود المكتملة</h4>
+                            <div class="stat-number" id="completed-items">0/36</div>
+                        </div>
+                        <div class="stat-box">
+                            <h4>متوسط الملاءمة</h4>
+                            <div class="stat-number" id="avg-relevance">0.0/5</div>
+                        </div>
+                        <div class="stat-box">
+                            <h4>متوسط الوضوح</h4>
+                            <div class="stat-number" id="avg-clarity">0.0/5</div>
+                        </div>
+                        <div class="stat-box">
+                            <h4>متوسط الضرورة</h4>
+                            <div class="stat-number" id="avg-necessity">0.0/5</div>
+                        </div>
+                    </div>
+                    
+                    <div id="low-rated-items" style="margin-top: 20px;">
+                        <h4 style="color: #e67e22;">⚠️ بنود تحتاج مراجعة (أقل من 4 نجوم):</h4>
+                        <div id="low-rated-list"></div>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label>هل توجد بنود مهمة مفقودة تقترحون إضافتها؟</label>
@@ -177,169 +364,252 @@
 
                 <div class="navigation-buttons">
                     <button class="btn btn-secondary" onclick="prevPage()">السابق</button>
-                    <button class="btn" onclick="submitForm()">إرسال التحكيم النهائي</button>
+                    <button class="btn" onclick="submitForm()">📤 إرسال التحكيم النهائي</button>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <script>
-        // إعدادات أساسية — ضعنا رابط الويب آب الذي أرسلته لي
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0-uVV-C6jGFXVojOh753zvF4JxPq44CuR30v7e7s2qvDtcMOmEqrOCKQNrD2l_2sdgg/exec';
+    <div class="save-status" id="saveStatus">💾 تم الحفظ تلقائياً</div>
 
-        // نصوص البنود الـ36
-        const ITEMS = [
-            "أجري تقويمًا تشخيصيًا أوليًا لتحديد قدرات وحاجيات كل تلميذ في وضعية إعاقة ذهنية قبل بدء التدريس.",
-            "أستعمل أدوات متعددة (مقابلات، ملاحظات صفية، اختبارات مبسطة) لجمع معلومات دقيقة حول التلميذ في وضعية إعاقة ذهنية.",
-            "أحدد مستوى الأداء الحالي للتلميذ في المجالات الأكاديمية، التواصلية، الاجتماعية، والحركية.",
-            "أطلب آراء أو تقارير الأخصائيين (نفسي، نطق، علاج وظيفي) لاستكمال التشخيص.",
-            "أُعد تقريرًا تشخيصيًا مكتوبًا يتضمن الحاجات التربوية للتلميذ في وضعية إعاقة ذهنية وأضعه في ملفه المدرسي.",
-            "أشارك في إعداد المشروع البيداغوجي الفردي للتلميذ في وضعية إعاقة ذهنية بالتعاون مع الفريق التربوي والأسرة.",
-            "أحدد أهدافًا تعليمية واقعية وقابلة للتحقق تراعي إمكانات التلميذ في وضعية إعاقة ذهنية.",
-            "أُكيّف محتوى الدروس والأنشطة لتلائم المشروع البيداغوجي الفردي.",
-            "أعدل زمن الأنشطة بما يتناسب مع قدرة التلميذ على التركيز والتحمل.",
-            "أطبق استراتيجيات تدريس متنوعة (البيداغوجيا الفارقية، العمل التعاوني، الوسائط البصرية والحسية) مع التلميذ في وضعية إعاقة ذهنية.",
-            "أبسط اللغة وأفكك المهام المعقدة، من المحسوس إلى المجرد، للتلميذ في وضعية إعاقة ذهنية.",
-            "أتابع مدى تحقق الأهداف في المشروع البيداغوجي الفردي وأُحدّث الخطة عند الحاجة.",
-            "أدمج التلميذ في وضعية إعاقة ذهنية في أنشطة جماعية منذ الحصص الأولى لتعزيز انتمائه.",
-            "أوفّر بيئة صفية آمنة نفسيًا واجتماعيًا تحفز المشاركة والمبادرة.",
-            "أوفر فرصًا منتظمة للتفاعل والتعاون بين التلميذ في وضعية إعاقة ذهنية وزملائه.",
-            "أطبق أساليب وقائية لتعزيز السلوك الإيجابي وتقليل السلوكيات الصعبة لدى التلميذ في وضعية إعاقة ذهنية.",
-            "أمنح التلميذ في وضعية إعاقة ذهنية أدوارًا ومسؤوليات مناسبة لقدراته.",
-            "أحتفي بإنجازات التلميذ في وضعية إعاقة ذهنية وأعرضها كنماذج إيجابية لزملائه.",
-            "أنظم فضاء القسم بما ييسر الحركة والوصول الآمن للتلميذ في وضعية إعاقة ذهنية.",
-            "أستفيد من قاعة الموارد لتقديم دعم فردي أو جماعي للتلميذ في وضعية إعاقة ذهنية.",
-            "أنظم التناوب بين زمن القسم وزمن قاعة الموارد لضمان التكامل.",
-            "أنمي الإيقاظ الذهني والانتباه والتركيز لدى التلميذ في وضعية إعاقة ذهنية من خلال أنشطة موجهة.",
-            "أنمي المهارات الحركية الدقيقة لدى التلميذ في وضعية إعاقة ذهنية من خلال أنشطة عملية.",
-            "أطور الإدراك البصري والتمييز البصري-المكاني لدى التلميذ في وضعية إعاقة ذهنية عبر تدريبات موجهة.",
-            "أنمي مهارات التواصل لدى التلميذ في وضعية إعاقة ذهنية عبر أنشطة جماعية أو لعب موجه.",
-            "أدرّب التلميذ في وضعية إعاقة ذهنية على مهارات حياتية أساسية تعزز استقلاليته.",
-            "أُكيّف أدوات التقييم (شفوي، عملي، رقمي) لتناسب احتياجات التلميذ في وضعية إعاقة ذهنية.",
-            "أطبق تكييفات الامتحانات مثل إعطاء وقت إضافي أو قراءة الأسئلة شفويًا.",
-            "أقيم تقدم التلميذ بناءً على أهدافه الفردية وليس بالمقارنة مع أقرانه.",
-            "أستخدم التقويم التكويني المستمر لتعديل طرائق التدريس للتلميذ في وضعية إعاقة ذهنية.",
-            "أجري تقويمات مرحلية دورية لتحديث المشروع البيداغوجي الفردي للتلميذ في وضعية إعاقة ذهنية.",
-            "أوثق تقدم التلميذ في وضعية إعاقة ذهنية في ملف خاص يضم نتائج التقويم والملاحظات.",
-            "أشارك نتائج المتابعة مع الأسرة والفريق التربوي والطبي.",
-            "أستخدم سجلات زمنية لرصد إنجاز التلميذ في وضعية إعاقة ذهنية بالنسبة للأهداف المحددة.",
-            "أقدم مقترحات مكتوبة لتعديل الأهداف أو إحالة التلميذ على خدمات دعم إضافية.",
-            "أسجل في تقارير دورية أثر التعديلات على أداء التلميذ في وضعية إعاقة ذهنية."
+    <script>
+        // إعدادات أساسية
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymJx9JEU0WqNlLaqABuTiSszKx14m9inMm7dW_Y8NT3e08ayco_ut4fYLPBuVcgy0xBg/exec';
+
+        // بنود الاستمارة مع المحاور
+        const AXIS_INFO = [
+            {
+                title: "المحور 1: التشخيص التربوي",
+                description: "يتوقع من الأستاذ الدامج القيام بالتشخيص التربوي، والذي يتجلى في جمع بيانات دقيقة عن قدرات وحاجيات التلميذ في وضعية إعاقة ذهنية قبل وأثناء العملية التعليمية، باستخدام أدوات متنوعة والتعاون مع المختصين. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "الإطار المرجعي، ص. 55–56؛ دليل الأستاذ، ص. 50",
+                items: [
+                    "أجري تقويمًا تشخيصيًا أوليًا لتحديد قدرات وحاجيات كل تلميذ في وضعية إعاقة ذهنية قبل بدء التدريس.",
+                    "أستعمل أدوات متعددة (مقابلات، ملاحظات صفية، اختبارات مبسطة) لجمع معلومات دقيقة حول التلميذ في وضعية إعاقة ذهنية.",
+                    "أحدد مستوى الأداء الحالي للتلميذ في المجالات الأكاديمية، التواصلية، الاجتماعية، والحركية.",
+                    "أطلب آراء أو تقارير الأخصائيين (نفسي، نطق، علاج وظيفي) لاستكمال التشخيص.",
+                    "أُعد تقريرًا تشخيصيًا مكتوبًا يتضمن الحاجات التربوية للتلميذ في وضعية إعاقة ذهنية وأضعه في ملفه المدرسي."
+                ]
+            },
+            {
+                title: "المحور 2: التخطيط البيداغوجي الفردي وتكييف التعلمات",
+                description: "يتوقع من الأستاذ الدامج القيام بالتخطيط البيداغوجي الفردي وتكييف التعلمات، والذي يتجلى في إعداد مشروع بيداغوجي فردي (PPI) يستند إلى نتائج التشخيص، مع تكييف الأهداف والمحتوى والزمن واستراتيجيات التدريس بما يتلاءم مع وضعية الإعاقة الذهنية. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "الإطار المرجعي، ص. 40–42؛ دليل الأستاذ، ص. 51–61",
+                items: [
+                    "أشارك في إعداد المشروع البيداغوجي الفردي للتلميذ في وضعية إعاقة ذهنية بالتعاون مع الفريق التربوي والأسرة.",
+                    "أحدد أهدافًا تعليمية واقعية وقابلة للتحقق تراعي إمكانات التلميذ في وضعية إعاقة ذهنية.",
+                    "أُكيّف محتوى الدروس والأنشطة لتلائم المشروع البيداغوجي الفردي.",
+                    "أعدل زمن الأنشطة بما يتناسب مع قدرة التلميذ على التركيز والتحمل.",
+                    "أطبق استراتيجيات تدريس متنوعة (البيداغوجيا الفارقية، العمل التعاوني، الوسائط البصرية والحسية) مع التلميذ في وضعية إعاقة ذهنية.",
+                    "أبسط اللغة وأفكك المهام المعقدة، من المحسوس إلى المجرد، للتلميذ في وضعية إعاقة ذهنية.",
+                    "أتابع مدى تحقق الأهداف في المشروع البيداغوجي الفردي وأُحدّث الخطة عند الحاجة."
+                ]
+            },
+            {
+                title: "المحور 3: الدعم الصفّي وبناء البيئة الدامجة",
+                description: "يتوقع من الأستاذ الدامج القيام بالدعم الصفّي وبناء البيئة الدامجة، والذي يتجلى في تهيئة بيئة صفية آمنة ومحفزة، تدعم مشاركة التلميذ في وضعية إعاقة ذهنية في الأنشطة الصفية مع زملائه، وتعزيز تفاعله الاجتماعي. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "دليل الأستاذ، ص. 63–68؛ القرار الوزاري 047.19، المواد 4–5",
+                items: [
+                    "أدمج التلميذ في وضعية إعاقة ذهنية في أنشطة جماعية منذ الحصص الأولى لتعزيز انتمائه.",
+                    "أوفّر بيئة صفية آمنة نفسيًا واجتماعيًا تحفز المشاركة والمبادرة.",
+                    "أوفر فرصًا منتظمة للتفاعل والتعاون بين التلميذ في وضعية إعاقة ذهنية وزملائه.",
+                    "أطبق أساليب وقائية لتعزيز السلوك الإيجابي وتقليل السلوكيات الصعبة لدى التلميذ في وضعية إعاقة ذهنية.",
+                    "أمنح التلميذ في وضعية إعاقة ذهنية أدوارًا ومسؤوليات مناسبة لقدراته.",
+                    "أحتفي بإنجازات التلميذ في وضعية إعاقة ذهنية وأعرضها كنماذج إيجابية لزملائه.",
+                    "أنظم فضاء القسم بما ييسر الحركة والوصول الآمن للتلميذ في وضعية إعاقة ذهنية."
+                ]
+            },
+            {
+                title: "المحور 4: الاستفادة من قاعة الموارد والتعلمات الداعمة",
+                description: "يتوقع من الأستاذ الدامج القيام بالاستفادة من قاعة الموارد والتعلمات الداعمة، والذي يتجلى في استغلال قاعة الموارد لأنشطة الدعم الفردي أو الجماعي، لتنمية المهارات المعرفية والحسية والحياتية للتلاميذ في وضعية إعاقة ذهنية. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "الإطار المرجعي، ص. 41؛ القرار الوزاري 047.19، المادة 6",
+                items: [
+                    "أستفيد من قاعة الموارد لتقديم دعم فردي أو جماعي للتلميذ في وضعية إعاقة ذهنية.",
+                    "أنظم التناوب بين زمن القسم وزمن قاعة الموارد لضمان التكامل.",
+                    "أنمي الإيقاظ الذهني والانتباه والتركيز لدى التلميذ في وضعية إعاقة ذهنية من خلال أنشطة موجهة.",
+                    "أنمي المهارات الحركية الدقيقة لدى التلميذ في وضعية إعاقة ذهنية من خلال أنشطة عملية.",
+                    "أطور الإدراك البصري والتمييز البصري-المكاني لدى التلميذ في وضعية إعاقة ذهنية عبر تدريبات موجهة.",
+                    "أنمي مهارات التواصل لدى التلميذ في وضعية إعاقة ذهنية عبر أنشطة جماعية أو لعب موجه.",
+                    "أدرّب التلميذ في وضعية إعاقة ذهنية على مهارات حياتية أساسية تعزز استقلاليته."
+                ]
+            },
+            {
+                title: "المحور 5: التقويم",
+                description: "يتوقع من الأستاذ الدامج القيام بالتقويم، والذي يتجلى في قياس تقدم التلميذ في وضعية إعاقة ذهنية وفق أهداف المشروع الفردي باستخدام أدوات وأساليب تكيفية، وإجراء تقويمات مرحلية لتحديث الخطط التعليمية. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "دليل الأستاذ، ص. 86–88؛ القرار الوزاري 047.19، المادة 8",
+                items: [
+                    "أُكيّف أدوات التقييم (شفوي، عملي، رقمي) لتناسب احتياجات التلميذ في وضعية إعاقة ذهنية.",
+                    "أطبق تكييفات الامتحانات مثل إعطاء وقت إضافي أو قراءة الأسئلة شفويًا.",
+                    "أقيم تقدم التلميذ بناءً على أهدافه الفردية وليس بالمقارنة مع أقرانه.",
+                    "أستخدم التقويم التكويني المستمر لتعديل طرائق التدريس للتلميذ في وضعية إعاقة ذهنية.",
+                    "أجري تقويمات مرحلية دورية لتحديث المشروع البيداغوجي الفردي للتلميذ في وضعية إعاقة ذهنية."
+                ]
+            },
+            {
+                title: "المحور 6: التوثيق والمتابعة",
+                description: "يتوقع من الأستاذ الدامج القيام بالتوثيق والمتابعة، والذي يتجلى في تسجيل وتتبع تقدم التلميذ، ومشاركة النتائج مع الأسرة والفريق، واتخاذ قرارات بناءة بناءً على البيانات المسجلة. وسنحول هذه المتطلبات إلى بنود عملية تعبر عن الممارسات الفعلية للأستاذ.",
+                reference: "الإطار المرجعي، ص. 61؛ دليل الأستاذ، ص. 88",
+                items: [
+                    "أوثق تقدم التلميذ في وضعية إعاقة ذهنية في ملف خاص يضم نتائج التقويم والملاحظات.",
+                    "أشارك نتائج المتابعة مع الأسرة والفريق التربوي والطبي.",
+                    "أستخدم سجلات زمنية لرصد إنجاز التلميذ في وضعية إعاقة ذهنية بالنسبة للأهداف المحددة.",
+                    "أقدم مقترحات مكتوبة لتعديل الأهداف أو إحالة التلميذ على خدمات دعم إضافية.",
+                    "أسجل في تقارير دورية أثر التعديلات على أداء التلميذ في وضعية إعاقة ذهنية."
+                ]
+            }
         ];
+
+        // نصوص tooltips للنجوم (معكوس للعربية: الأضعف على اليمين)
+        const STAR_TOOLTIPS = {
+            relevance: ['ملائم تماماً', 'ملائم', 'ملاءمة متوسطة', 'ملاءمة ضعيفة', 'غير ملائم'],
+            clarity: ['واضح تماماً', 'واضح', 'وضوح متوسط', 'وضوح ضعيف', 'غير واضح'],
+            necessity: ['ضروري جداً', 'ضروري', 'ضرورة متوسطة', 'ضرورة ضعيفة', 'غير ضروري']
+        };
 
         let currentPage = 0;
         let totalPages = 0;
         let formData = {};
+        let lastSaveTime = Date.now();
 
         // إنشاء صفحات البنود ديناميكياً
         function createItemPages() {
             const content = document.querySelector('.content');
-            const finalPage = document.getElementById('final-page');
-            const itemsPerPage = 6;
-            const pageCount = Math.ceil(ITEMS.length / itemsPerPage);
-
-            for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-                const startIndex = pageIndex * itemsPerPage;
-                const endIndex = Math.min(startIndex + itemsPerPage, ITEMS.length);
-
+            const summaryPage = document.getElementById('summary-page');
+            
+            let itemIndex = 1;
+            
+            AXIS_INFO.forEach((axis, axisIndex) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
-                pageDiv.id = `page${pageIndex + 2}`;
-
-                const pageTitle = `البنود ${startIndex + 1} - ${endIndex}`;
-
+                pageDiv.id = `axis-page-${axisIndex}`;
+                
                 let pageHTML = `
-                    <div class="page-title">${pageTitle}</div>
-                    <div class="page-subtitle">يرجى تقييم كل بند بحسب مناسبته للاستمارة</div>
+                    <div class="axis-header">
+                        <h3>${axis.title}</h3>
+                        <p>${axis.description}</p>
+                        <div class="axis-reference">المرجع: ${axis.reference}</div>
+                    </div>
                 `;
-
-                for (let i = startIndex; i < endIndex; i++) {
-                    const itemNumber = i + 1;
-                    const itemText = ITEMS[i];
-
+                
+                axis.items.forEach((item, index) => {
+                    const axisName = axis.title.split(':')[1].trim();
                     pageHTML += `
-                        <div class="item-card">
-                            <div class="item-number">البند ${itemNumber} من 36</div>
-                            <div class="item-text">${itemText}</div>
-
-                            <div class="form-group">
-                                <label>تقييمك لهذا البند: *</label>
-                                <div class="radio-group">
-                                    <label>
-                                        <input type="radio" name="item${itemNumber}_evaluation" value="مناسب" onchange="handleItemEvaluation(${itemNumber}, 'مناسب')">
-                                        <span>مناسب</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="item${itemNumber}_evaluation" value="يحتاج تعديل" onchange="handleItemEvaluation(${itemNumber}, 'يحتاج تعديل')">
-                                        <span>يحتاج تعديل</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="item${itemNumber}_evaluation" value="غير مناسب" onchange="handleItemEvaluation(${itemNumber}, 'غير مناسب')">
-                                        <span>غير مناسب</span>
-                                    </label>
+                        <div class="item-card" id="item-card-${itemIndex}">
+                            <div class="item-number">البند ${itemIndex} من 36</div>
+                            <div class="item-text">${item}</div>
+                            
+                            <div class="evaluation-container">
+                                <table class="evaluation-table">
+                                    <thead>
+                                        <tr>
+                                            <th>مدى الملاءمة</th>
+                                            <th>مدى الوضوح</th>
+                                            <th>مدى الضرورة</th>
+                                        </tr>
+                                        <tr class="sub-header">
+                                            <td>هل يقيس البعد المطلوب؟ (${axisName})</td>
+                                            <td>هل الصياغة واضحة؟</td>
+                                            <td>هل البند ضروري؟</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="star-rating" data-item="${itemIndex}" data-type="relevance">
+                                                    <span class="star" data-value="5" title="${STAR_TOOLTIPS.relevance[0]}"></span>
+                                                    <span class="star" data-value="4" title="${STAR_TOOLTIPS.relevance[1]}"></span>
+                                                    <span class="star" data-value="3" title="${STAR_TOOLTIPS.relevance[2]}"></span>
+                                                    <span class="star" data-value="2" title="${STAR_TOOLTIPS.relevance[3]}"></span>
+                                                    <span class="star" data-value="1" title="${STAR_TOOLTIPS.relevance[4]}"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="star-rating" data-item="${itemIndex}" data-type="clarity">
+                                                    <span class="star" data-value="5" title="${STAR_TOOLTIPS.clarity[0]}"></span>
+                                                    <span class="star" data-value="4" title="${STAR_TOOLTIPS.clarity[1]}"></span>
+                                                    <span class="star" data-value="3" title="${STAR_TOOLTIPS.clarity[2]}"></span>
+                                                    <span class="star" data-value="2" title="${STAR_TOOLTIPS.clarity[3]}"></span>
+                                                    <span class="star" data-value="1" title="${STAR_TOOLTIPS.clarity[4]}"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="star-rating" data-item="${itemIndex}" data-type="necessity">
+                                                    <span class="star" data-value="5" title="${STAR_TOOLTIPS.necessity[0]}"></span>
+                                                    <span class="star" data-value="4" title="${STAR_TOOLTIPS.necessity[1]}"></span>
+                                                    <span class="star" data-value="3" title="${STAR_TOOLTIPS.necessity[2]}"></span>
+                                                    <span class="star" data-value="2" title="${STAR_TOOLTIPS.necessity[3]}"></span>
+                                                    <span class="star" data-value="1" title="${STAR_TOOLTIPS.necessity[4]}"></span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="comments-section">
+                                    <label>تعليقات أو ملاحظات على هذا البند (اختياري):</label>
+                                    <textarea name="item${itemIndex}_comment" rows="3" placeholder="أي ملاحظات أو اقتراحات لتحسين هذا البند..."></textarea>
                                 </div>
-                            </div>
-
-                            <div class="conditional-section" id="edit-section-${itemNumber}">
-                                <label>التعديل المقترح: *</label>
-                                <textarea name="item${itemNumber}_edit_suggestion" rows="3" placeholder="اقترح التعديل المطلوب..."></textarea>
-                            </div>
-
-                            <div class="conditional-section" id="reject-section-${itemNumber}">
-                                <label>سبب عدم المناسبة: *</label>
-                                <div class="checkbox-group">
-                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غامض/غير واضح"><span>غامض/غير واضح</span></label>
-                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غير مهم/غير مرتبط"><span>غير مهم/غير مرتبط</span></label>
-                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="مكرر مع بند آخر"><span>مكرر مع بند آخر</span></label>
-                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غير قابل للتطبيق"><span>غير قابل للتطبيق</span></label>
-                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="أخرى"><span>أخرى</span></label>
-                                </div>
-                                <textarea name="item${itemNumber}_reject_other" rows="2" placeholder="أسباب أخرى..." style="margin-top: 10px;"></textarea>
                             </div>
                         </div>
                     `;
-                }
-
+                    itemIndex++;
+                });
+                
                 pageHTML += `
-                    <div class="error-message" id="error${pageIndex + 2}"></div>
+                    <div class="error-message" id="error-axis-${axisIndex}"></div>
                     <div class="navigation-buttons">
                         <button class="btn btn-secondary" onclick="prevPage()">السابق</button>
                         <button class="btn" onclick="nextPage()">التالي</button>
                     </div>
                 `;
-
+                
                 pageDiv.innerHTML = pageHTML;
-                content.insertBefore(pageDiv, finalPage);
-            }
-
+                content.insertBefore(pageDiv, summaryPage);
+            });
+            
             totalPages = document.querySelectorAll('.page').length;
+            setupStarRatings();
         }
 
-        function handleItemEvaluation(itemNumber, value) {
-            const editSection = document.getElementById(`edit-section-${itemNumber}`);
-            const rejectSection = document.getElementById(`reject-section-${itemNumber}`);
-
-            editSection.classList.remove('show');
-            rejectSection.classList.remove('show');
-
-            if (value === 'يحتاج تعديل') {
-                editSection.classList.add('show');
-            } else if (value === 'غير مناسب') {
-                rejectSection.classList.add('show');
-            }
-            saveCurrentPageData();
+        // إعداد تقييم النجوم
+        function setupStarRatings() {
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('star')) {
+                    const rating = e.target.closest('.star-rating');
+                    const value = parseInt(e.target.dataset.value);
+                    const item = rating.dataset.item;
+                    const type = rating.dataset.type;
+                    
+                    // حفظ التقييم
+                    formData[`item${item}_${type}`] = value;
+                    
+                    // تحديث النجوم - فعّل كل نجمة قيمتها <= القيمة المختارة
+                    const stars = rating.querySelectorAll('.star');
+                    stars.forEach(star => {
+                        const v = Number(star.dataset.value);
+                        star.classList.toggle('active', v <= value);
+                    });
+                    
+                    saveCurrentPageData();
+                }
+            });
         }
 
+        // إدارة الصفحات
         function nextPage() {
             if (!validateCurrentPage()) return;
             saveCurrentPageData();
+            
             if (currentPage < totalPages - 1) {
                 document.querySelectorAll('.page')[currentPage].classList.remove('active');
                 currentPage++;
                 document.querySelectorAll('.page')[currentPage].classList.add('active');
                 updateProgress();
                 window.scrollTo(0, 0);
+                
+                // إذا وصلنا لصفحة الملخص، احسب الإحصائيات
+                if (currentPage === totalPages - 1) {
+                    calculateSummary();
+                }
             }
         }
 
@@ -357,18 +627,19 @@
         function updateProgress() {
             const progress = ((currentPage + 1) / totalPages) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `الصفحة ${currentPage + 1} من ${totalPages}`;
         }
 
+        // التحقق من صحة البيانات
         function validateCurrentPage() {
             const currentPageElement = document.querySelectorAll('.page')[currentPage];
-            const errorElement = currentPageElement.querySelector('.error-message');
-
             clearErrors();
 
             let isValid = true;
             let errorMessage = '';
 
             if (currentPage === 1) {
+                // التحقق من بيانات المحكم
                 const requiredFields = ['expert_name', 'expert_role', 'years_experience'];
                 for (const fieldName of requiredFields) {
                     const field = currentPageElement.querySelector(`[name="${fieldName}"]`);
@@ -379,44 +650,28 @@
                     }
                 }
             } else if (currentPage >= 2 && currentPage < totalPages - 1) {
+                // التحقق من تقييمات البنود
                 const itemCards = currentPageElement.querySelectorAll('.item-card');
-
-                itemCards.forEach((card, index) => {
-                    const itemNumber = ((currentPage - 2) * 6) + index + 1;
-                    const evaluationRadios = card.querySelectorAll(`input[name="item${itemNumber}_evaluation"]`);
-                    const isEvaluated = Array.from(evaluationRadios).some(radio => radio.checked);
-
-                    if (!isEvaluated) {
+                itemCards.forEach(card => {
+                    const itemId = card.id.split('-')[2];
+                    const relevanceRating = formData[`item${itemId}_relevance`];
+                    const clarityRating = formData[`item${itemId}_clarity`];
+                    const necessityRating = formData[`item${itemId}_necessity`];
+                    
+                    if (!relevanceRating || !clarityRating || !necessityRating) {
                         card.classList.add('invalid');
                         isValid = false;
-                        errorMessage = 'يرجى تقييم جميع البنود في هذه الصفحة';
-                    } else {
-                        const evaluationValue = card.querySelector(`input[name="item${itemNumber}_evaluation"]:checked`)?.value;
-
-                        if (evaluationValue === 'يحتاج تعديل') {
-                            const editTextarea = card.querySelector(`textarea[name="item${itemNumber}_edit_suggestion"]`);
-                            if (!editTextarea?.value.trim()) {
-                                editTextarea?.classList.add('invalid');
-                                isValid = false;
-                                errorMessage = 'يرجى كتابة التعديل المقترح للبنود التي تحتاج تعديل';
-                            }
-                        } else if (evaluationValue === 'غير مناسب') {
-                            const rejectCheckboxes = card.querySelectorAll(`input[name="item${itemNumber}_reject_reason"]`);
-                            const isReasonSelected = Array.from(rejectCheckboxes).some(checkbox => checkbox.checked);
-
-                            if (!isReasonSelected) {
-                                card.querySelector('.checkbox-group')?.classList.add('invalid');
-                                isValid = false;
-                                errorMessage = 'يرجى تحديد سبب عدم مناسبة البند';
-                            }
-                        }
+                        errorMessage = 'يرجى تقييم جميع البنود في هذه الصفحة (الملاءمة، الوضوح، الضرورة)';
                     }
                 });
             }
 
-            if (!isValid && errorElement) {
-                errorElement.textContent = errorMessage;
-                errorElement.style.display = 'block';
+            if (!isValid) {
+                const errorElement = currentPageElement.querySelector('.error-message');
+                if (errorElement) {
+                    errorElement.textContent = errorMessage;
+                    errorElement.style.display = 'block';
+                }
             }
             return isValid;
         }
@@ -426,6 +681,7 @@
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
         }
 
+        // حفظ البيانات
         function saveCurrentPageData() {
             const currentPageElement = document.querySelectorAll('.page')[currentPage];
             const inputs = currentPageElement.querySelectorAll('input, textarea, select');
@@ -433,54 +689,84 @@
             inputs.forEach(input => {
                 if (input.type === 'radio') {
                     if (input.checked) formData[input.name] = input.value;
-                } else if (input.type === 'checkbox') {
-                    if (!formData[input.name]) formData[input.name] = [];
-                    if (input.checked && !formData[input.name].includes(input.value)) {
-                        formData[input.name].push(input.value);
-                    } else if (!input.checked) {
-                        formData[input.name] = formData[input.name].filter(val => val !== input.value);
-                    }
                 } else {
                     formData[input.name] = input.value;
                 }
             });
 
-            try { localStorage.setItem('evaluationFormData', JSON.stringify(formData)); } catch (e) {}
-        }
-
-        function loadSavedData() {
             try {
-                const savedData = localStorage.getItem('evaluationFormData');
-                if (savedData) { formData = JSON.parse(savedData); restoreFormData(); }
-            } catch (e) {}
+                localStorage.setItem('evaluationFormData', JSON.stringify(formData));
+                showSaveStatus('💾 تم الحفظ تلقائياً - يمكنك العودة لاحقاً لإكمال التحكيم');
+                lastSaveTime = Date.now();
+            } catch (e) {
+                console.error('خطأ في الحفظ:', e);
+            }
         }
 
-        function restoreFormData() {
-            Object.keys(formData).forEach(name => {
-                const elements = document.querySelectorAll(`[name="${name}"]`);
-                elements.forEach(element => {
-                    if (element.type === 'radio') {
-                        if (element.value === formData[name]) {
-                            element.checked = true;
-                            if (name.includes('_evaluation')) {
-                                const itemNumber = name.match(/item(\d+)_evaluation/)?.[1];
-                                if (itemNumber) handleItemEvaluation(parseInt(itemNumber), element.value);
-                            }
-                        }
-                    } else if (element.type === 'checkbox') {
-                        if (Array.isArray(formData[name]) && formData[name].includes(element.value)) {
-                            element.checked = true;
-                        }
-                    } else {
-                        element.value = formData[name] || '';
+        function showSaveStatus(message) {
+            const statusElement = document.getElementById('saveStatus');
+            statusElement.textContent = message;
+            statusElement.classList.add('show');
+            setTimeout(() => {
+                statusElement.classList.remove('show');
+            }, 3000);
+        }
+
+        // الحفظ التلقائي الذكي
+        function smartAutoSave() {
+            const timeSinceLastSave = Date.now() - lastSaveTime;
+            if (timeSinceLastSave > 30000) { // إذا مر أكثر من 30 ثانية
+                saveCurrentPageData();
+            }
+        }
+
+        // حساب الملخص
+        function calculateSummary() {
+            let completed = 0;
+            let totalRelevance = 0, totalClarity = 0, totalNecessity = 0;
+            let lowRatedItems = [];
+
+            for (let i = 1; i <= 36; i++) {
+                const relevance = formData[`item${i}_relevance`];
+                const clarity = formData[`item${i}_clarity`];
+                const necessity = formData[`item${i}_necessity`];
+
+                if (relevance && clarity && necessity) {
+                    completed++;
+                    totalRelevance += parseInt(relevance);
+                    totalClarity += parseInt(clarity);
+                    totalNecessity += parseInt(necessity);
+
+                    // البحث عن البنود منخفضة التقييم
+                    if (relevance < 4 || clarity < 4 || necessity < 4) {
+                        lowRatedItems.push({
+                            item: i,
+                            relevance: relevance,
+                            clarity: clarity,
+                            necessity: necessity
+                        });
                     }
-                });
-            });
+                }
+            }
+
+            // تحديث الإحصائيات
+            document.getElementById('completed-items').textContent = `${completed}/36`;
+            document.getElementById('avg-relevance').textContent = completed > 0 ? (totalRelevance / completed).toFixed(1) + '/5' : '0.0/5';
+            document.getElementById('avg-clarity').textContent = completed > 0 ? (totalClarity / completed).toFixed(1) + '/5' : '0.0/5';
+            document.getElementById('avg-necessity').textContent = completed > 0 ? (totalNecessity / completed).toFixed(1) + '/5' : '0.0/5';
+
+            // عرض البنود منخفضة التقييم
+            const lowRatedList = document.getElementById('low-rated-list');
+            if (lowRatedItems.length > 0) {
+                lowRatedList.innerHTML = lowRatedItems.map(item => 
+                    `<p>• البند ${item.item}: الملاءمة (${item.relevance}⭐) - الوضوح (${item.clarity}⭐) - الضرورة (${item.necessity}⭐)</p>`
+                ).join('');
+            } else {
+                lowRatedList.innerHTML = '<p style="color: #27ae60;">🎉 جميع البنود حصلت على تقييم عالي!</p>';
+            }
         }
 
-        function setupAutoSave() { setInterval(saveCurrentPageData, 30000); }
-
-        // ⬇️ الدالة الوحيدة التي غيّرناها لتُرسل urlencoded بدل FormData
+        // إرسال النموذج
         async function submitForm() {
             if (!validateCurrentPage()) return;
             saveCurrentPageData();
@@ -490,24 +776,24 @@
             try {
                 const payload = new URLSearchParams();
 
-                // بيانات المُحكِّم
-                payload.append('اسم المُحكِّم', formData.expert_name || '');
-                payload.append('الصفة/الدور', formData.expert_role || '');
-                payload.append('سنوات الخبرة', formData.years_experience || '');
-                payload.append('طبيعة الخبرة بالتربية الدامجة', formData.experience_type || '');
-                payload.append('البريد الإلكتروني', formData.email || '');
+                // بيانات المحكم
+                payload.append('expert_name', formData.expert_name || '');
+                payload.append('expert_role', formData.expert_role === 'أخرى' ? formData.expert_role_other : formData.expert_role || '');
+                payload.append('years_experience', formData.years_experience || '');
+                payload.append('experience_type', formData.experience_type || '');
+                payload.append('email', formData.email || '');
 
-                // البنود 1..36
+                // بيانات البنود
                 for (let i = 1; i <= 36; i++) {
-                    payload.append(`البند ${i} - تقييم`, formData[`item${i}_evaluation`] || '');
-                    payload.append(`البند ${i} - تعديل مقترح`, formData[`item${i}_edit_suggestion`] || '');
-                    const reasons = formData[`item${i}_reject_reason`];
-                    payload.append(`البند ${i} - سبب الرفض`, Array.isArray(reasons) ? reasons.join(', ') : '');
+                    payload.append(`item${i}_relevance`, formData[`item${i}_relevance`] || '');
+                    payload.append(`item${i}_clarity`, formData[`item${i}_clarity`] || '');
+                    payload.append(`item${i}_necessity`, formData[`item${i}_necessity`] || '');
+                    payload.append(`item${i}_comment`, formData[`item${i}_comment`] || '');
                 }
 
                 // التعليقات النهائية
-                payload.append('بنود مفقودة مقترحة', formData.missing_items || '');
-                payload.append('اقتراحات تحسين الاستمارة', formData.improvement_suggestions || '');
+                payload.append('missing_items', formData.missing_items || '');
+                payload.append('improvement_suggestions', formData.improvement_suggestions || '');
 
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
@@ -515,8 +801,8 @@
                     body: payload.toString()
                 });
 
-                const serverText = await response.text();
-                console.log('Server response:', serverText);
+                const serverResponse = await response.text();
+                console.log('Server response:', serverResponse);
 
                 if (!response.ok) throw new Error('فشل في الإرسال');
 
@@ -535,23 +821,107 @@
 
             } catch (err) {
                 console.error(err);
-                alert('حدث خطأ في الإرسال. تأكد من رابط /exec وصلاحيات النشر ثم جرّب مرة أخرى.');
+                alert('حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى.');
             }
         }
 
-        function initializePage() {
-            createItemPages();
-            updateProgress();
-            loadSavedData();
-            setupAutoSave();
+        // إعادة تعيين جميع النجوم
+        function resetAllStars() {
+            document.querySelectorAll('.star.active').forEach(s => s.classList.remove('active'));
+            ['relevance', 'clarity', 'necessity'].forEach(k => {
+                for (let i = 1; i <= 36; i++) delete formData[`item${i}_${k}`];
+            });
+        }
 
-            window.addEventListener('beforeunload', function() { saveCurrentPageData(); });
+        // استرجاع البيانات المحفوظة
+        function loadSavedData() {
+            try {
+                const savedData = localStorage.getItem('evaluationFormData');
+                if (savedData) {
+                    if (confirm('توجد جلسة سابقة محفوظة. هل تريد استئنافها؟')) {
+                        formData = JSON.parse(savedData);
+                        restoreFormData();
+                    } else {
+                        localStorage.removeItem('evaluationFormData');
+                        formData = {};
+                        resetAllStars();
+                    }
+                }
+            } catch (e) {
+                console.error('خطأ في استرجاع البيانات:', e);
+            }
+        }
+
+        function restoreFormData() {
+            // استرجاع البيانات النصية
+            Object.keys(formData).forEach(name => {
+                const elements = document.querySelectorAll(`[name="${name}"]`);
+                elements.forEach(element => {
+                    if (element.type === 'radio') {
+                        if (element.value === formData[name]) {
+                            element.checked = true;
+                        }
+                    } else {
+                        element.value = formData[name] || '';
+                    }
+                });
+            });
+
+            // استرجاع تقييمات النجوم
+            for (let i = 1; i <= 36; i++) {
+                ['relevance', 'clarity', 'necessity'].forEach(type => {
+                    const value = formData[`item${i}_${type}`];
+                    if (value) {
+                        const rating = document.querySelector(`.star-rating[data-item="${i}"][data-type="${type}"]`);
+                        if (rating) {
+                            const stars = rating.querySelectorAll('.star');
+                            stars.forEach(star => {
+                                const v = Number(star.dataset.value);
+                                star.classList.toggle('active', v <= value);
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        // إعداد الأحداث
+        function setupEventListeners() {
+            // إظهار/إخفاء حقل "أخرى"
+            document.addEventListener('change', function(e) {
+                if (e.target.name === 'expert_role') {
+                    const otherGroup = document.getElementById('other-role-group');
+                    if (e.target.value === 'أخرى') {
+                        otherGroup.style.display = 'block';
+                    } else {
+                        otherGroup.style.display = 'none';
+                    }
+                }
+            });
+
+            // حفظ تلقائي
+            setInterval(() => {
+                if (Object.keys(formData).length > 0) {
+                    smartAutoSave();
+                }
+            }, 30000);
+
+            // حفظ عند مغادرة الصفحة
             window.addEventListener('beforeunload', function(e) {
+                saveCurrentPageData();
                 if (currentPage > 0 && Object.keys(formData).length > 0) {
                     e.preventDefault();
                     e.returnValue = 'سيتم فقدان البيانات غير المحفوظة. هل تريد المغادرة؟';
                 }
             });
+        }
+
+        // تهيئة التطبيق
+        function initializePage() {
+            createItemPages();
+            updateProgress();
+            loadSavedData();
+            setupEventListeners();
         }
 
         document.addEventListener('DOMContentLoaded', initializePage);
