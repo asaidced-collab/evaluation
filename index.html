@@ -7,7 +7,7 @@
   <style>
     body { font-family: system-ui,"Segoe UI",Tahoma,Arial; line-height:1.7; margin:0; background:#fafafa; color:#222; }
     .container { max-width:1000px; margin:24px auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.06); }
-    h1,h2,h3 { margin-top:0; }
+    h1,h2 { margin-top:0; }
     .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 16px; }
     .page { display:none; }
     .page.active { display:block; }
@@ -37,13 +37,6 @@
 
     /* شارة توضيحية أعلى التقييم الكلي */
     .overall-note { background:#f1f5ff; border:1px dashed #93c5fd; padding:8px 12px; border-radius:10px; font-size:.95em; color:#1e3a8a; }
-
-    /* جدول المعاينة */
-    .preview-section { margin: 16px 0 24px; }
-    .preview-table { width:100%; border-collapse: collapse; }
-    .preview-table th, .preview-table td { border:1px solid #e5e7eb; padding:8px 10px; vertical-align:top; }
-    .preview-table th { background:#f9fafb; text-align:right; white-space:nowrap; }
-    .muted { color:#6b7280; }
   </style>
 </head>
 <body>
@@ -195,32 +188,6 @@
       </div>
     </section>
 
-    <!-- صفحة المعاينة -->
-    <section class="page" id="pagePreview">
-      <h2>معاينة قبل الإرسال</h2>
-      <p class="hint">راجع الملخص أدناه. يمكنك الرجوع وتعديل أي قيمة، ثم العودة للمعاينة مجددًا.</p>
-
-      <div class="preview-section">
-        <h3>البيانات العامة</h3>
-        <table class="preview-table" id="previewGeneral"></table>
-      </div>
-
-      <div class="preview-section">
-        <h3>ملخص البنود</h3>
-        <table class="preview-table" id="previewItems"></table>
-      </div>
-
-      <div class="preview-section">
-        <h3>التقييمات النهائية</h3>
-        <table class="preview-table" id="previewFinals"></table>
-      </div>
-
-      <div class="navigation-buttons">
-        <button class="btn btn-secondary" type="button" onclick="prevPage()">السابق (تعديل)</button>
-        <button class="btn" type="button" onclick="nextPage()">التالي (إرسال)</button>
-      </div>
-    </section>
-
     <!-- صفحة الإرسال -->
     <section class="page" id="page1000">
       <h2>إرسال التحكيم</h2>
@@ -237,10 +204,11 @@
     // ========= إعدادات =========
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCQrG9O7EeWSqtjNludnMP8rukeeKqqVSY8aAKZRb_ZfuaSTc_LDWlDspGniPOQvN1zA/exec';
     const STORAGE_KEY = 'evaluationFormData';
-    const ITEM_NUMBERS = [1,2,3,4,5,6, 13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36];
-    const PARTS = ['وضوح','ملاءمة','شمولية'];
 
-    // ========= إنشاء صفحات البنود ديناميكيًا =========
+    // نستخدم البنود 1–6 ثم 13–36 (مطابق لنسختك الأصلية).
+    const ITEM_NUMBERS = [1,2,3,4,5,6, 13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36];
+
+    // ========= إنشاء صفحات البنود ديناميكيًا (6 بنود في الصفحة) =========
     function createItemBlock(n) {
       return `
         <div class="item-block">
@@ -337,16 +305,10 @@
       updateProgress();
       window.scrollTo(0,0);
 
-      // عند التقييم النهائي احسب التقييم الكلي
+      // عند الوصول لصفحة التقييم النهائي، احسب التقييم الكلي تلقائيًا
       const id = pages[currentPage]?.id || '';
       if (id === 'page999') {
         computeOverallScore();
-      }
-      // عند المعاينة ابنِ الملخص
-      if (id === 'pagePreview') {
-        saveCurrentPageData();
-        computeOverallScore();
-        buildPreview();
       }
     }
 
@@ -465,15 +427,20 @@
 
     // ========= حِسبة تلقائية للتقييم الكلي =========
     function computeOverallScore() {
+      // تأكد أن آخر إدخالات محفوظة
       saveCurrentPageData();
+
+      const parts = ['وضوح','ملاءمة','شمولية'];
       const values = [];
+
       for (const n of ITEM_NUMBERS) {
-        for (const p of PARTS) {
+        for (const p of parts) {
           const key = `البند ${n} – ${p}`;
           const v = Number(window.formData[key]);
           if (!Number.isNaN(v)) values.push(v);
         }
       }
+
       const badge = document.getElementById('overallBadge');
       const select = document.getElementById('overallSelect');
 
@@ -490,63 +457,6 @@
       if (badge) badge.textContent = `المتوسط = ${avg.toFixed(2)}  →  تم ضبط "التقييم الكلي" تلقائيًا على ${rounded}`;
 
       return { avg, rounded, count: values.length };
-    }
-
-    // ========= معاينة قبل الإرسال =========
-    function buildPreview() {
-      const genTable = document.getElementById('previewGeneral');
-      const itemsTable = document.getElementById('previewItems');
-      const finalsTable = document.getElementById('previewFinals');
-
-      // عام
-      const generalFields = ['اسم المُحكِّم','الصفة/الدور','سنوات الخبرة','طبيعة الخبرة بالتربية الدامجة','البريد الإلكتروني'];
-      genTable.innerHTML = generalFields.map(name => `
-        <tr><th>${name}</th><td>${escapeHTML(window.formData[name] ?? '—')}</td></tr>
-      `).join('');
-
-      // البنود
-      let itemsHTML = `
-        <tr>
-          <th>رقم البند</th>
-          <th>وضوح</th>
-          <th>ملاءمة</th>
-          <th>شمولية</th>
-          <th>قرار</th>
-          <th>ملاحظات</th>
-        </tr>
-      `;
-      for (const n of ITEM_NUMBERS) {
-        const clarity = window.formData[`البند ${n} – وضوح`] ?? '—';
-        const relevance = window.formData[`البند ${n} – ملاءمة`] ?? '—';
-        const inclusiveness = window.formData[`البند ${n} – شمولية`] ?? '—';
-        const decision = window.formData[`البند ${n} – قرار`] ?? '—';
-        const notes = window.formData[`البند ${n} – ملاحظات`] ?? '—';
-        itemsHTML += `
-          <tr>
-            <th>البند ${n}</th>
-            <td>${escapeHTML(clarity)}</td>
-            <td>${escapeHTML(relevance)}</td>
-            <td>${escapeHTML(inclusiveness)}</td>
-            <td>${escapeHTML(decision)}</td>
-            <td>${escapeHTML(notes)}</td>
-          </tr>
-        `;
-      }
-      itemsTable.innerHTML = itemsHTML;
-
-      // النهائية
-      const finals = [
-        'التقييم الكلي','شمول التغطية','ملاءمة عدد البنود','التوصية النهائية',
-        'تعليقات المحور 1','تعليقات المحور 3','تعليقات المحور 4','تعليقات المحور 5','تعليقات المحور 6',
-        'عناصر القوة','مجالات التحسين','ملاحظات عامة'
-      ];
-      finalsTable.innerHTML = finals.map(name => `
-        <tr><th>${name}</th><td>${escapeHTML(window.formData[name] ?? '—')}</td></tr>
-      `).join('');
-    }
-
-    function escapeHTML(s) {
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
     // ========= حفظ/استرجاع/تفريغ محلي =========
@@ -587,6 +497,7 @@
     }
 
     function applyFormDataToInputs() {
+      // مرّر القيم من formData إلى الحقول
       document.querySelectorAll('input, textarea, select').forEach(el => {
         const name = el.name;
         if (!name) return;
@@ -612,8 +523,13 @@
     // ========= إرسال إلى Google Apps Script (مع التحقّق) =========
     async function submitForm() {
       saveCurrentPageData();
-      computeOverallScore();   // تأكد من ضبط التقييم الكلي
-      if (!validateForm()) return;
+
+      // توليد التقييم الكلي قبل الإرسال
+      computeOverallScore();
+
+      if (!validateForm()) {
+        return; // لا نرسل إذا كانت هناك أخطاء
+      }
 
       const params = new URLSearchParams();
       for (const [k, v] of Object.entries(window.formData)) {
@@ -664,19 +580,29 @@
         <div class="item-block">
           <h3>البند ${n}</h3>
           <p class="hint"><em>ضع نص البند هنا لو رغبت (اختياري)</em></p>
+
           <div class="grid">
             <div class="field">
               <label>البند ${n} – وضوح</label>
-              <div>${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – وضوح" value="${i}"> ${i}</label>`).join(' ')}</div>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – وضوح" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
             </div>
+
             <div class="field">
               <label>البند ${n} – ملاءمة</label>
-              <div>${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – ملاءمة" value="${i}"> ${i}</label>`).join(' ')}</div>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – ملاءمة" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
             </div>
+
             <div class="field">
               <label>البند ${n} – شمولية</label>
-              <div>${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – شمولية" value="${i}"> ${i}</label>`).join(' ')}</div>
+              <div>
+                ${[1,2,3,4,5].map(i => `<label><input type="radio" name="البند ${n} – شمولية" value="${i}"> ${i}</label>`).join(' ')}
+              </div>
             </div>
+
             <div class="field">
               <label>البند ${n} – قرار</label>
               <div>
@@ -686,19 +612,28 @@
               </div>
             </div>
           </div>
+
           <div class="field">
             <label>البند ${n} – ملاحظات</label>
             <textarea name="البند ${n} – ملاحظات" rows="3" placeholder="ملاحظات مختصرة"></textarea>
           </div>
+
           <hr />
         </div>
       `;
     }
 
-    // إنشاء الصفحات ثم تهيئة
+    // إنشاء صفحات البنود ثم تهيئة
     createItemPages();
     refreshPages();
     updateProgress();
+
+    // تلميح صغير لو فيه بيانات محفوظة
+    try {
+      if (localStorage.getItem(STORAGE_KEY)) {
+        console.log('بيانات محفوظة محليًا متوفرة—استخدم زر "استرجاع".');
+      }
+    } catch (e) {}
   </script>
 </body>
 </html>
