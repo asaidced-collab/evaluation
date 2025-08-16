@@ -5,307 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استمارة تحكيم الممارسات التربوية الدامجة</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
+            min-height: 100vh; padding: 20px; line-height: 1.6;
         }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(45deg, #2c3e50, #3498db);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #ecf0f1;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .page-title {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #3498db;
-        }
-
-        .page-subtitle {
-            font-size: 1.1em;
-            color: #666;
-            margin-bottom: 25px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(45deg, #2c3e50, #3498db); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .content { padding: 40px; }
+        .page { display: none; animation: fadeIn 0.5s ease-in; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+        .progress-bar { width: 100%; height: 8px; background: #ecf0f1; border-radius: 4px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(45deg, #3498db, #2980b9); border-radius: 4px; transition: width 0.5s ease; width: 0%; }
+        .page-title { font-size: 1.8em; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #3498db; }
+        .page-subtitle { font-size: 1.1em; color: #666; margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;
         }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .radio-group label {
-            font-weight: normal;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-
-        .radio-group label:hover {
-            border-color: #3498db;
-            background: #f0f8ff;
-        }
-
-        .radio-group input[type="radio"] {
-            margin-left: 8px;
-            margin-right: 5px;
-        }
-
-        .radio-group input[type="radio"]:checked + span {
-            color: #3498db;
-            font-weight: bold;
-        }
-
-        .item-card {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .item-card:hover {
-            border-color: #3498db;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.15);
-        }
-
-        .item-card.invalid {
-            border-color: #e74c3c;
-            background-color: #fff5f5;
-        }
-
-        .item-number {
-            position: absolute;
-            top: -10px;
-            right: 15px;
-            background: #3498db;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        .item-text {
-            font-size: 1.1em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-right: 60px;
-            line-height: 1.7;
-            font-weight: 500;
-        }
-
-        .conditional-section {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-
-        .conditional-section.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; max-height: 0; }
-            to { opacity: 1; max-height: 200px; }
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px 5px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
-        }
-
-        .navigation-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            background: #fdf2f2;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .invalid {
-            border-color: #e74c3c !important;
-            background-color: #fff5f5 !important;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .checkbox-group label:hover {
-            border-color: #3498db;
-            background: #f0f8ff;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            margin-left: 8px;
-            margin-right: 5px;
-        }
-
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #3498db; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 10px; }
+        .radio-group label { font-weight: normal; margin-bottom: 0; display: flex; align-items: center; cursor: pointer; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; transition: all 0.3s; }
+        .radio-group label:hover { border-color: #3498db; background: #f0f8ff; }
+        .radio-group input[type="radio"] { margin-left: 8px; margin-right: 5px; }
+        .radio-group input[type="radio"]:checked + span { color: #3498db; font-weight: bold; }
+        .item-card { background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 25px; margin-bottom: 25px; transition: all 0.3s; position: relative; }
+        .item-card:hover { border-color: #3498db; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(52, 152, 219, 0.15); }
+        .item-card.invalid { border-color: #e74c3c; background-color: #fff5f5; }
+        .item-number { position: absolute; top: -10px; right: 15px; background: #3498db; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em; font-weight: bold; }
+        .item-text { font-size: 1.1em; color: #2c3e50; margin-bottom: 20px; padding-right: 60px; line-height: 1.7; font-weight: 500; }
+        .conditional-section { display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db; }
+        .conditional-section.show { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 200px; } }
+        .btn { background: linear-gradient(45deg, #3498db, #2980b9); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: all 0.3s; margin: 10px 5px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3); }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
+        .navigation-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .error-message { color: #e74c3c; background: #fdf2f2; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
+        .invalid { border-color: #e74c3c !important; background-color: #fff5f5 !important; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+        .checkbox-group label { display: flex; align-items: center; padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+        .checkbox-group label:hover { border-color: #3498db; background: #f0f8ff; }
+        .checkbox-group input[type="checkbox"] { margin-left: 8px; margin-right: 5px; }
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 10px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .radio-group {
-                flex-direction: column;
-            }
+            .container { margin: 10px; border-radius: 10px; }
+            .content { padding: 20px; }
+            .radio-group { flex-direction: column; }
         }
     </style>
 </head>
@@ -317,14 +68,11 @@
         </div>
 
         <div class="content">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
             <!-- صفحة الترحيب -->
             <div class="page active" id="page0">
                 <div class="page-title">مرحباً بكم في استمارة التحكيم</div>
-                
                 <div class="page-subtitle">
                     <strong>الغرض من التحكيم:</strong> تقييم جودة أداة قياس مدى التزام أساتذة التعليم الابتدائي بالممارسات التربوية الدامجة وفق المرجعيات المغربية الرسمية.
                 </div>
@@ -406,8 +154,6 @@
                 </div>
             </div>
 
-            <!-- المحاور ستُضاف هنا ديناميكياً -->
-
             <!-- صفحة التعليقات النهائية -->
             <div class="page" id="final-page">
                 <div class="page-title">تعليقات نهائية</div>
@@ -439,8 +185,8 @@
     </div>
 
     <script>
-        // إعدادات أساسية
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1XY-zPav1TPCz6-0ItML-Cx7UXagf1TH1mIpvhPhAjm63txjVlEoVsT8wqxKyzCIhfg/exec';
+        // إعدادات أساسية — ضعنا رابط الويب آب الذي أرسلته لي
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0-uVV-C6jGFXVojOh753zvF4JxPq44CuR30v7e7s2qvDtcMOmEqrOCKQNrD2l_2sdgg/exec';
 
         // نصوص البنود الـ36
         const ITEMS = [
@@ -490,37 +236,33 @@
         function createItemPages() {
             const content = document.querySelector('.content');
             const finalPage = document.getElementById('final-page');
-            
-            // إنشاء صفحات البنود (6 بنود لكل صفحة)
             const itemsPerPage = 6;
             const pageCount = Math.ceil(ITEMS.length / itemsPerPage);
-            
+
             for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
                 const startIndex = pageIndex * itemsPerPage;
                 const endIndex = Math.min(startIndex + itemsPerPage, ITEMS.length);
-                
+
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
                 pageDiv.id = `page${pageIndex + 2}`;
-                
+
                 const pageTitle = `البنود ${startIndex + 1} - ${endIndex}`;
-                
+
                 let pageHTML = `
                     <div class="page-title">${pageTitle}</div>
-                    <div class="page-subtitle">
-                        يرجى تقييم كل بند بحسب مناسبته للاستمارة
-                    </div>
+                    <div class="page-subtitle">يرجى تقييم كل بند بحسب مناسبته للاستمارة</div>
                 `;
-                
+
                 for (let i = startIndex; i < endIndex; i++) {
                     const itemNumber = i + 1;
                     const itemText = ITEMS[i];
-                    
+
                     pageHTML += `
                         <div class="item-card">
                             <div class="item-number">البند ${itemNumber} من 36</div>
                             <div class="item-text">${itemText}</div>
-                            
+
                             <div class="form-group">
                                 <label>تقييمك لهذا البند: *</label>
                                 <div class="radio-group">
@@ -538,42 +280,27 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="conditional-section" id="edit-section-${itemNumber}">
                                 <label>التعديل المقترح: *</label>
                                 <textarea name="item${itemNumber}_edit_suggestion" rows="3" placeholder="اقترح التعديل المطلوب..."></textarea>
                             </div>
-                            
+
                             <div class="conditional-section" id="reject-section-${itemNumber}">
                                 <label>سبب عدم المناسبة: *</label>
                                 <div class="checkbox-group">
-                                    <label>
-                                        <input type="checkbox" name="item${itemNumber}_reject_reason" value="غامض/غير واضح">
-                                        <span>غامض/غير واضح</span>
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="item${itemNumber}_reject_reason" value="غير مهم/غير مرتبط">
-                                        <span>غير مهم/غير مرتبط</span>
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="item${itemNumber}_reject_reason" value="مكرر مع بند آخر">
-                                        <span>مكرر مع بند آخر</span>
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="item${itemNumber}_reject_reason" value="غير قابل للتطبيق">
-                                        <span>غير قابل للتطبيق</span>
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" name="item${itemNumber}_reject_reason" value="أخرى">
-                                        <span>أخرى</span>
-                                    </label>
+                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غامض/غير واضح"><span>غامض/غير واضح</span></label>
+                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غير مهم/غير مرتبط"><span>غير مهم/غير مرتبط</span></label>
+                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="مكرر مع بند آخر"><span>مكرر مع بند آخر</span></label>
+                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="غير قابل للتطبيق"><span>غير قابل للتطبيق</span></label>
+                                    <label><input type="checkbox" name="item${itemNumber}_reject_reason" value="أخرى"><span>أخرى</span></label>
                                 </div>
                                 <textarea name="item${itemNumber}_reject_other" rows="2" placeholder="أسباب أخرى..." style="margin-top: 10px;"></textarea>
                             </div>
                         </div>
                     `;
                 }
-                
+
                 pageHTML += `
                     <div class="error-message" id="error${pageIndex + 2}"></div>
                     <div class="navigation-buttons">
@@ -581,43 +308,32 @@
                         <button class="btn" onclick="nextPage()">التالي</button>
                     </div>
                 `;
-                
+
                 pageDiv.innerHTML = pageHTML;
                 content.insertBefore(pageDiv, finalPage);
             }
-            
-            // تحديث العدد الإجمالي للصفحات
+
             totalPages = document.querySelectorAll('.page').length;
         }
 
-        // التعامل مع التقييم التدريجي
         function handleItemEvaluation(itemNumber, value) {
             const editSection = document.getElementById(`edit-section-${itemNumber}`);
             const rejectSection = document.getElementById(`reject-section-${itemNumber}`);
-            
-            // إخفاء جميع الأقسام أولاً
+
             editSection.classList.remove('show');
             rejectSection.classList.remove('show');
-            
-            // إظهار القسم المناسب
+
             if (value === 'يحتاج تعديل') {
                 editSection.classList.add('show');
             } else if (value === 'غير مناسب') {
                 rejectSection.classList.add('show');
             }
-            
-            // حفظ البيانات
             saveCurrentPageData();
         }
 
-        // التنقل بين الصفحات
         function nextPage() {
-            if (!validateCurrentPage()) {
-                return;
-            }
-            
+            if (!validateCurrentPage()) return;
             saveCurrentPageData();
-            
             if (currentPage < totalPages - 1) {
                 document.querySelectorAll('.page')[currentPage].classList.remove('active');
                 currentPage++;
@@ -629,7 +345,6 @@
 
         function prevPage() {
             saveCurrentPageData();
-            
             if (currentPage > 0) {
                 document.querySelectorAll('.page')[currentPage].classList.remove('active');
                 currentPage--;
@@ -639,27 +354,22 @@
             }
         }
 
-        // تحديث شريط التقدم
         function updateProgress() {
             const progress = ((currentPage + 1) / totalPages) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
         }
 
-        // التحقق من صحة البيانات في الصفحة الحالية
         function validateCurrentPage() {
             const currentPageElement = document.querySelectorAll('.page')[currentPage];
             const errorElement = currentPageElement.querySelector('.error-message');
-            
-            // إزالة الأخطاء السابقة
+
             clearErrors();
-            
+
             let isValid = true;
             let errorMessage = '';
-            
+
             if (currentPage === 1) {
-                // التحقق من بيانات المحكم
                 const requiredFields = ['expert_name', 'expert_role', 'years_experience'];
-                
                 for (const fieldName of requiredFields) {
                     const field = currentPageElement.querySelector(`[name="${fieldName}"]`);
                     if (!field || !field.value.trim()) {
@@ -669,22 +379,20 @@
                     }
                 }
             } else if (currentPage >= 2 && currentPage < totalPages - 1) {
-                // التحقق من تقييم البنود
                 const itemCards = currentPageElement.querySelectorAll('.item-card');
-                
+
                 itemCards.forEach((card, index) => {
                     const itemNumber = ((currentPage - 2) * 6) + index + 1;
                     const evaluationRadios = card.querySelectorAll(`input[name="item${itemNumber}_evaluation"]`);
                     const isEvaluated = Array.from(evaluationRadios).some(radio => radio.checked);
-                    
+
                     if (!isEvaluated) {
                         card.classList.add('invalid');
                         isValid = false;
                         errorMessage = 'يرجى تقييم جميع البنود في هذه الصفحة';
                     } else {
-                        // التحقق من الحقول الشرطية
                         const evaluationValue = card.querySelector(`input[name="item${itemNumber}_evaluation"]:checked`)?.value;
-                        
+
                         if (evaluationValue === 'يحتاج تعديل') {
                             const editTextarea = card.querySelector(`textarea[name="item${itemNumber}_edit_suggestion"]`);
                             if (!editTextarea?.value.trim()) {
@@ -695,7 +403,7 @@
                         } else if (evaluationValue === 'غير مناسب') {
                             const rejectCheckboxes = card.querySelectorAll(`input[name="item${itemNumber}_reject_reason"]`);
                             const isReasonSelected = Array.from(rejectCheckboxes).some(checkbox => checkbox.checked);
-                            
+
                             if (!isReasonSelected) {
                                 card.querySelector('.checkbox-group')?.classList.add('invalid');
                                 isValid = false;
@@ -705,39 +413,28 @@
                     }
                 });
             }
-            
+
             if (!isValid && errorElement) {
                 errorElement.textContent = errorMessage;
                 errorElement.style.display = 'block';
             }
-            
             return isValid;
         }
 
-        // إزالة أخطاء التحقق
         function clearErrors() {
-            document.querySelectorAll('.invalid').forEach(element => {
-                element.classList.remove('invalid');
-            });
-            document.querySelectorAll('.error-message').forEach(element => {
-                element.style.display = 'none';
-            });
+            document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
         }
 
-        // حفظ بيانات الصفحة الحالية
         function saveCurrentPageData() {
             const currentPageElement = document.querySelectorAll('.page')[currentPage];
             const inputs = currentPageElement.querySelectorAll('input, textarea, select');
-            
+
             inputs.forEach(input => {
                 if (input.type === 'radio') {
-                    if (input.checked) {
-                        formData[input.name] = input.value;
-                    }
+                    if (input.checked) formData[input.name] = input.value;
                 } else if (input.type === 'checkbox') {
-                    if (!formData[input.name]) {
-                        formData[input.name] = [];
-                    }
+                    if (!formData[input.name]) formData[input.name] = [];
                     if (input.checked && !formData[input.name].includes(input.value)) {
                         formData[input.name].push(input.value);
                     } else if (!input.checked) {
@@ -747,29 +444,17 @@
                     formData[input.name] = input.value;
                 }
             });
-            
-            // حفظ في التخزين المحلي
-            try {
-                localStorage.setItem('evaluationFormData', JSON.stringify(formData));
-            } catch (e) {
-                console.log('Could not save to localStorage');
-            }
+
+            try { localStorage.setItem('evaluationFormData', JSON.stringify(formData)); } catch (e) {}
         }
 
-        // تحميل البيانات المحفوظة
         function loadSavedData() {
             try {
                 const savedData = localStorage.getItem('evaluationFormData');
-                if (savedData) {
-                    formData = JSON.parse(savedData);
-                    restoreFormData();
-                }
-            } catch (e) {
-                console.log('Could not load from localStorage');
-            }
+                if (savedData) { formData = JSON.parse(savedData); restoreFormData(); }
+            } catch (e) {}
         }
 
-        // استعادة البيانات في النموذج
         function restoreFormData() {
             Object.keys(formData).forEach(name => {
                 const elements = document.querySelectorAll(`[name="${name}"]`);
@@ -777,12 +462,9 @@
                     if (element.type === 'radio') {
                         if (element.value === formData[name]) {
                             element.checked = true;
-                            // تحديث الأقسام الشرطية
                             if (name.includes('_evaluation')) {
                                 const itemNumber = name.match(/item(\d+)_evaluation/)?.[1];
-                                if (itemNumber) {
-                                    handleItemEvaluation(parseInt(itemNumber), element.value);
-                                }
+                                if (itemNumber) handleItemEvaluation(parseInt(itemNumber), element.value);
                             }
                         }
                     } else if (element.type === 'checkbox') {
@@ -796,106 +478,74 @@
             });
         }
 
-        // الحفظ التلقائي
-        function setupAutoSave() {
-            setInterval(() => {
-                saveCurrentPageData();
-            }, 30000); // كل 30 ثانية
-        }
+        function setupAutoSave() { setInterval(saveCurrentPageData, 30000); }
 
-        // إرسال النموذج النهائي
+        // ⬇️ الدالة الوحيدة التي غيّرناها لتُرسل urlencoded بدل FormData
         async function submitForm() {
-            if (!validateCurrentPage()) {
-                return;
-            }
-            
+            if (!validateCurrentPage()) return;
             saveCurrentPageData();
-            
-            // تأكيد الإرسال
-            if (!confirm('هل أنتم متأكدون من إرسال التحكيم؟ لن تتمكنوا من التعديل بعد الإرسال.')) {
-                return;
-            }
-            
+
+            if (!confirm('هل أنتم متأكدون من إرسال التحكيم؟ لن تتمكنوا من التعديل بعد الإرسال.')) return;
+
             try {
-                // تحضير البيانات للإرسال
-                const formDataToSend = new FormData();
-                
-                // إضافة الطابع الزمني
-                formDataToSend.append('timestamp', new Date().toISOString());
-                
-                // إضافة بيانات المحكم
-                formDataToSend.append('اسم المُحكِّم', formData.expert_name || '');
-                formDataToSend.append('الصفة/الدور', formData.expert_role || '');
-                formDataToSend.append('سنوات الخبرة', formData.years_experience || '');
-                formDataToSend.append('طبيعة الخبرة بالتربية الدامجة', formData.experience_type || '');
-                formDataToSend.append('البريد الإلكتروني', formData.email || '');
-                
-                // إضافة بيانات البنود
+                const payload = new URLSearchParams();
+
+                // بيانات المُحكِّم
+                payload.append('اسم المُحكِّم', formData.expert_name || '');
+                payload.append('الصفة/الدور', formData.expert_role || '');
+                payload.append('سنوات الخبرة', formData.years_experience || '');
+                payload.append('طبيعة الخبرة بالتربية الدامجة', formData.experience_type || '');
+                payload.append('البريد الإلكتروني', formData.email || '');
+
+                // البنود 1..36
                 for (let i = 1; i <= 36; i++) {
-                    formDataToSend.append(`البند ${i} - تقييم`, formData[`item${i}_evaluation`] || '');
-                    formDataToSend.append(`البند ${i} - تعديل مقترح`, formData[`item${i}_edit_suggestion`] || '');
-                    
-                    // أسباب الرفض (تحويل المصفوفة إلى نص)
-                    const rejectReasons = formData[`item${i}_reject_reason`];
-                    if (Array.isArray(rejectReasons)) {
-                        formDataToSend.append(`البند ${i} - سبب الرفض`, rejectReasons.join(', '));
-                    } else {
-                        formDataToSend.append(`البند ${i} - سبب الرفض`, '');
-                    }
+                    payload.append(`البند ${i} - تقييم`, formData[`item${i}_evaluation`] || '');
+                    payload.append(`البند ${i} - تعديل مقترح`, formData[`item${i}_edit_suggestion`] || '');
+                    const reasons = formData[`item${i}_reject_reason`];
+                    payload.append(`البند ${i} - سبب الرفض`, Array.isArray(reasons) ? reasons.join(', ') : '');
                 }
-                
-                // إضافة التعليقات النهائية
-                formDataToSend.append('بنود مفقودة مقترحة', formData.missing_items || '');
-                formDataToSend.append('اقتراحات تحسين الاستمارة', formData.improvement_suggestions || '');
-                
-                // إرسال البيانات
+
+                // التعليقات النهائية
+                payload.append('بنود مفقودة مقترحة', formData.missing_items || '');
+                payload.append('اقتراحات تحسين الاستمارة', formData.improvement_suggestions || '');
+
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    body: formDataToSend
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: payload.toString()
                 });
-                
-                if (response.ok) {
-                    // عرض رسالة النجاح
-                    document.querySelector('.content').innerHTML = `
-                        <div style="text-align: center; padding: 50px;">
-                            <div style="font-size: 4em; color: #27ae60; margin-bottom: 20px;">✅</div>
-                            <h2 style="color: #27ae60; margin-bottom: 15px;">تم إرسال التحكيم بنجاح!</h2>
-                            <p style="color: #555; font-size: 1.1em; line-height: 1.6;">
-                                شكراً جزيلاً لمساهمتكم القيمة!<br>
-                                تم حفظ تقييمكم وسيساهم في تطوير أداة بحثية عالية الجودة.
-                            </p>
-                            <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                                <p style="color: #1976d2; margin: 0;">
-                                    <strong>💡 ملاحظة:</strong> يمكنكم إغلاق هذه النافذة الآن.
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // حذف البيانات المحفوظة
-                    localStorage.removeItem('evaluationFormData');
-                } else {
-                    throw new Error('فشل في الإرسال');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى أو التواصل مع الباحث.');
+
+                const serverText = await response.text();
+                console.log('Server response:', serverText);
+
+                if (!response.ok) throw new Error('فشل في الإرسال');
+
+                document.querySelector('.content').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <div style="font-size: 4em; color: #27ae60; margin-bottom: 20px;">✅</div>
+                        <h2 style="color: #27ae60; margin-bottom: 15px;">تم إرسال التحكيم بنجاح!</h2>
+                        <p style="color: #555; font-size: 1.1em; line-height: 1.6;">
+                            شكراً جزيلاً لمساهمتكم القيمة!<br>
+                            تم حفظ تقييمكم وسيساهم في تطوير أداة بحثية عالية الجودة.
+                        </p>
+                    </div>
+                `;
+
+                localStorage.removeItem('evaluationFormData');
+
+            } catch (err) {
+                console.error(err);
+                alert('حدث خطأ في الإرسال. تأكد من رابط /exec وصلاحيات النشر ثم جرّب مرة أخرى.');
             }
         }
 
-        // تهيئة الصفحة
         function initializePage() {
             createItemPages();
             updateProgress();
             loadSavedData();
             setupAutoSave();
-            
-            // إضافة مستمع لحفظ البيانات عند مغادرة الصفحة
-            window.addEventListener('beforeunload', function() {
-                saveCurrentPageData();
-            });
-            
-            // تحذير من فقدان البيانات
+
+            window.addEventListener('beforeunload', function() { saveCurrentPageData(); });
             window.addEventListener('beforeunload', function(e) {
                 if (currentPage > 0 && Object.keys(formData).length > 0) {
                     e.preventDefault();
@@ -904,7 +554,6 @@
             });
         }
 
-        // تشغيل التهيئة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
